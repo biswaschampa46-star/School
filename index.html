@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>MAGURA COLLECTORATE COLLEGIATE SCHOOL</title>
 <link rel="icon" type="image/png" href="113.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1044,6 +1047,11 @@ async function execDelete() {
   console.log('═══════════════════════════════════════════════════');
   console.log('📋 pendId:', pendId);
   console.log('📋 pendType:', pendType);
+  console.log('📋 Current data count:', {
+    notices: notices.length,
+    routines: routines.length,
+    pictures: pictures.length
+  });
   
   if (!pendId || !pendType) {
     console.error('❌ Missing pendId or pendType');
@@ -1060,7 +1068,7 @@ async function execDelete() {
   btn.disabled = true;
 
   try {
-    const { ref, remove, storage, storageRef, deleteObject } = window._fb;
+    const { ref, remove, get, storage, storageRef, deleteObject } = window._fb;
     const db = getDB();
     
     if (!db) {
@@ -1074,7 +1082,21 @@ async function execDelete() {
     const dbPath = `${map[pendType]}/${pendId}`;
     console.log('🎯 Firebase path to delete:', dbPath);
 
-    // Delete image from Storage first (if applicable)
+    // STEP 1: Verify item exists in Firebase before deleting
+    const dbRef = ref(db, dbPath);
+    const snapshot = await get(dbRef);
+    
+    if (!snapshot.exists()) {
+      console.warn('⚠️  Item does not exist in Firebase (already deleted?)');
+      showToast('Info', 'Item already deleted', 'warn');
+      closeDeleteModal();
+      return;
+    }
+    
+    console.log('✓ Item exists in Firebase, proceeding with delete');
+    console.log('📦 Item data:', snapshot.val());
+
+    // STEP 2: Delete image from Storage first (if applicable)
     if (pendType === 'picture') {
       const pic = pictures.find(p => p.id === pendId);
       console.log('🖼️  Picture object:', pic);
@@ -1091,20 +1113,30 @@ async function execDelete() {
           }
         } catch(storageErr) {
           console.warn('⚠️  Storage delete failed (non-fatal):', storageErr.message);
+          console.warn('⚠️  Error code:', storageErr.code);
         }
       } else if (pic && pic.imageData) {
         console.log('ℹ️  Picture uses base64 imageData (no Storage delete needed)');
       }
     }
 
-    // Remove from Firebase Realtime Database
+    // STEP 3: Delete from Firebase Realtime Database
     console.log('🔥 Deleting from Firebase Realtime Database...');
-    const dbRef = ref(db, dbPath);
-    console.log('📍 Database reference created:', dbRef.toString());
+    console.log('📍 Database reference:', dbRef.toString());
     
     await remove(dbRef);
     
     console.log('✅ SUCCESSFULLY DELETED FROM FIREBASE DATABASE');
+    
+    // STEP 4: Verify deletion by checking if item still exists
+    const verifySnapshot = await get(dbRef);
+    if (verifySnapshot.exists()) {
+      console.error('❌ CRITICAL: Item still exists after delete!');
+      console.error('❌ This indicates a Firebase permissions issue');
+      throw new Error('Delete failed - item still exists in Firebase');
+    }
+    
+    console.log('✅ VERIFIED: Item no longer exists in Firebase');
     console.log('═══════════════════════════════════════════════════');
     console.log('🎉 Delete operation completed successfully');
     console.log('═══════════════════════════════════════════════════');
@@ -1112,6 +1144,9 @@ async function execDelete() {
     const labels = { notice: 'Notice', routine: 'Routine', picture: 'Picture' };
     showToast('Deleted', `${labels[pendType]} removed permanently`, 'danger');
     closeDeleteModal();
+    
+    // STEP 5: Force UI update (listeners should handle this automatically)
+    console.log('🔄 Waiting for Firebase listeners to update UI...');
     
   } catch(e) {
     console.error('═══════════════════════════════════════════════════');
@@ -1122,7 +1157,13 @@ async function execDelete() {
     console.error('Error code:', e.code);
     console.error('Error stack:', e.stack);
     console.error('═══════════════════════════════════════════════════');
-    showToast('Error', 'Failed to delete: ' + e.message, 'danger');
+    
+    // Check if it's a permissions error
+    if (e.code === 'PERMISSION_DENIED') {
+      showToast('Error', 'Permission denied - check Firebase rules', 'danger');
+    } else {
+      showToast('Error', 'Failed to delete: ' + e.message, 'danger');
+    }
   } finally {
     btn.textContent = 'Delete';
     btn.disabled = false;
