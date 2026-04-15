@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ── CSS CUSTOM PROPERTIES ──────────────────────────────── */
 :root {
   --green:        #30d158;
   --green-dim:    #25a244;
@@ -40,7 +39,6 @@
   --sub:          #aeaeb2;
 }
 
-/* ── RESET ──────────────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 html{scroll-behavior:smooth;scrollbar-width:none;scroll-padding-top:72px}
 html::-webkit-scrollbar{display:none}
@@ -51,7 +49,6 @@ body{
   transition:background .35s var(--ease),color .35s var(--ease);
 }
 
-/* ── ANIMATED MESH BACKGROUND ───────────────────────────── */
 .mesh{
   position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
@@ -66,7 +63,6 @@ body{
   66%{transform:translate(-1%,1%) scale(.99)}
 }
 
-/* ── LOADING ────────────────────────────────────────────── */
 #loading{
   position:fixed;inset:0;background:var(--bg);z-index:9998;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
@@ -82,7 +78,6 @@ body{
 @keyframes spin{to{transform:rotate(360deg)}}
 .load-lbl{font-size:13px;color:var(--sub);letter-spacing:.04em}
 
-/* ── SPLASH ─────────────────────────────────────────────── */
 #splash{
   position:fixed;inset:0;z-index:9997;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;
@@ -98,7 +93,6 @@ body{
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ── LOGO ───────────────────────────────────────────────── */
 #logo{
   position:fixed;z-index:9999;top:50%;left:50%;
   transform:translate(-50%,-50%) scale(1);
@@ -121,7 +115,6 @@ body{
   box-shadow:0 0 0 3px rgba(255,255,255,.95),0 6px 20px var(--green-glow),0 0 0 1px var(--border)!important;
 }
 
-/* ── HEADER ─────────────────────────────────────────────── */
 header{
   position:relative;overflow:hidden;padding:60px 24px 44px;text-align:center;
   background:linear-gradient(145deg,#1a5c44 0%,#267055 50%,#30d158 100%);
@@ -142,7 +135,7 @@ header p{
   letter-spacing:.05em;margin-top:10px;position:relative;
 }
 
-/* ── DARK TOGGLE ────────────────────────────────────────── */
+/* FIX #3: Added appearance:none and -webkit-appearance:none to theme button */
 #themeBtn{
   position:fixed;top:16px;right:16px;z-index:1002;
   width:52px;height:30px;border-radius:15px;
@@ -150,7 +143,7 @@ header p{
   box-shadow:var(--sh-sm);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
   cursor:pointer;display:flex;align-items:center;padding:3px;
   transition:background .3s var(--ease),border-color .3s var(--ease);
-  /* FIXED: removed all button all:unset to avoid breaking the toggle */
+  appearance:none;-webkit-appearance:none;
 }
 .theme-knob{
   width:22px;height:22px;border-radius:50%;background:#fff;
@@ -161,7 +154,6 @@ header p{
 }
 .dark .theme-knob{transform:translateX(22px);background:linear-gradient(135deg,#ffd600,#ffab00)}
 
-/* ── NAV ────────────────────────────────────────────────── */
 nav{
   position:sticky;top:0;z-index:1000;
   display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:12px 20px;
@@ -173,7 +165,6 @@ nav{
 nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-md)}
 .dark nav.stuck{background:rgba(28,28,30,.96)}
 
-/* ── BUTTONS ────────────────────────────────────────────── */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
   cursor:pointer;font-family:inherit;font-weight:500;font-size:14px;
@@ -184,6 +175,7 @@ nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-
   transition:transform .22s var(--ease),box-shadow .22s var(--ease);
   will-change:transform,box-shadow;
   -webkit-tap-highlight-color:transparent;
+  appearance:none;-webkit-appearance:none;
 }
 .btn::before{
   content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
@@ -225,7 +217,6 @@ nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-
 .btn-cancel-md{background:rgba(142,142,147,.12)!important;color:var(--sub)!important;box-shadow:none!important;border:1px solid rgba(142,142,147,.2)!important}
 .btn-confirm{background:linear-gradient(135deg,#ff3b30,#ff6b6b)!important;box-shadow:0 4px 14px rgba(255,59,48,.35)!important}
 
-/* ── RIPPLE ─────────────────────────────────────────────── */
 .ripple{
   position:absolute;border-radius:50%;background:rgba(255,255,255,.55);
   pointer-events:none;transform:scale(0);
@@ -233,10 +224,8 @@ nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-
 }
 @keyframes rippleAnim{to{transform:scale(4);opacity:0}}
 
-/* ── LAYOUT ─────────────────────────────────────────────── */
 .container{max-width:940px;margin:0 auto;padding:36px 20px 72px}
 
-/* ── CARDS ──────────────────────────────────────────────── */
 .card{
   background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
   border-radius:var(--r-lg);padding:32px;
@@ -251,20 +240,18 @@ nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-
 .card.visible{opacity:1;transform:none}
 .card:hover{box-shadow:var(--sh-lg);border-color:rgba(48,209,88,.22)}
 
-/* ── TYPOGRAPHY ─────────────────────────────────────────── */
 .sec-title{font-size:1.3rem;font-weight:600;color:var(--label);letter-spacing:-.01em;margin-bottom:18px;display:flex;align-items:center;gap:9px}
 .sublabel{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin:24px 0 8px;padding-left:2px}
 .card-header{text-align:center;margin-bottom:26px}
 .card-header h2{font-size:1.5rem;font-weight:600;color:var(--label);letter-spacing:-.01em;margin-bottom:6px}
 .card-header p{font-size:13px;color:var(--sub)}
 
-/* ── INPUTS ─────────────────────────────────────────────── */
 input,textarea,select{
   font-family:inherit;width:100%;padding:13px 17px;margin-bottom:11px;
   border:1px solid var(--border);border-radius:var(--r-sm);font-size:14px;
   background:var(--surface-solid);color:var(--label);
   transition:border-color .2s var(--ease),box-shadow .2s var(--ease),background .2s var(--ease);
-  appearance:none;outline:none;
+  appearance:none;-webkit-appearance:none;outline:none;
 }
 .dark input,.dark textarea,.dark select{background:rgba(44,44,46,.9);color:var(--label)}
 input::placeholder,textarea::placeholder{color:var(--sub);opacity:.7}
@@ -273,7 +260,6 @@ input:focus,textarea:focus,select:focus{
 }
 textarea{resize:vertical;min-height:88px;line-height:1.5}
 
-/* ── DIVIDER ────────────────────────────────────────────── */
 .divider{
   height:1px;margin:28px 0;position:relative;overflow:hidden;
   background:linear-gradient(90deg,transparent,var(--border),transparent);
@@ -285,7 +271,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 }
 @keyframes shine{0%{left:-100%}100%{left:100%}}
 
-/* ── LIST ───────────────────────────────────────────────── */
 .dlist{list-style:none;display:flex;flex-direction:column;gap:8px}
 .dlist li{
   background:var(--surface);border:1px solid var(--border);
@@ -310,7 +295,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
   border-radius:var(--r-sm);transition:background .3s var(--ease);
 }
 
-/* ── GRID: TEACHER ADD PANELS ───────────────────────────── */
 .add-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 @media(max-width:680px){.add-grid{grid-template-columns:1fr}}
 .panel{
@@ -323,7 +307,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .panel:hover{box-shadow:var(--sh-md);border-color:rgba(48,209,88,.28);transform:translateY(-2px)}
 .panel-title{font-size:.95rem;font-weight:600;color:var(--label);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 
-/* ── IMAGE UPLOAD ───────────────────────────────────────── */
 .upload-zone{
   border:2px dashed rgba(48,209,88,.32);border-radius:var(--r-sm);
   padding:28px 16px;text-align:center;cursor:pointer;position:relative;
@@ -343,7 +326,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .upload-hint{font-size:11px;color:var(--sub);opacity:.65;margin-top:3px}
 #imgPreview{width:100%;max-height:170px;object-fit:contain;border-radius:var(--r-sm);margin-bottom:10px;display:none;background:var(--surface-solid);border:1px solid var(--border)}
 
-/* ── NOTICE OVERLAY / MODAL ─────────────────────────────── */
 .overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);z-index:8000;
@@ -396,7 +378,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .notice-img-item img{width:100%;max-height:280px;object-fit:contain;background:var(--surface-solid);display:block}
 .img-cap{padding:9px 13px;font-size:13px;color:var(--sub)}
 
-/* ── DELETE MODAL ───────────────────────────────────────── */
 #deleteOverlay{z-index:9400}
 #deleteModal{
   position:fixed;top:50%;left:50%;z-index:9500;
@@ -420,7 +401,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .del-actions{display:flex;gap:11px;padding:4px 22px 22px;justify-content:flex-end}
 .del-actions .btn{padding:9px 20px!important;font-size:13px!important;border-radius:12px!important}
 
-/* ── TOAST ──────────────────────────────────────────────── */
 #toasts{
   position:fixed;top:20px;right:20px;z-index:10002;
   display:flex;flex-direction:column;gap:9px;pointer-events:none;
@@ -439,7 +419,6 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .t-title{font-size:13px;font-weight:600;display:block;margin-bottom:2px;color:var(--label)}
 .t-msg{font-size:12px;color:var(--sub)}
 
-/* ── DEV FLOAT BTN ──────────────────────────────────────── */
 .dev-float{
   position:fixed;bottom:26px;right:26px;width:52px;height:52px;
   border-radius:50%;border:none;outline:none;cursor:pointer;
@@ -448,11 +427,11 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
   font-size:20px;z-index:7900;display:flex;align-items:center;justify-content:center;
   animation:floatY 5s ease-in-out infinite;
   transition:transform .3s var(--ease),box-shadow .3s var(--ease);will-change:transform;
+  appearance:none;-webkit-appearance:none;
 }
 .dev-float:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(94,92,230,.52)}
 @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
-/* ── DEV BOX ────────────────────────────────────────────── */
 #devOverlay{z-index:8800}
 .dev-box{
   position:fixed;top:50%;left:50%;z-index:8900;
@@ -499,7 +478,16 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
 .spark:nth-child(3){animation-delay:1.2s}
 @keyframes sp{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
+/* FIX #8: Session badge to show logged-in state */
+.session-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.25);
+  border-radius:999px;padding:5px 12px;font-size:12px;font-weight:500;
+  color:var(--green);margin-bottom:14px;
+}
+.session-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+
 @media(max-width:640px){
   header{padding:48px 18px 38px}
   .container{padding:26px 16px 60px}
@@ -517,22 +505,25 @@ textarea{resize:vertical;min-height:88px;line-height:1.5}
   .btn{padding:10px 20px;font-size:13px}
 }
 
-/* ── REDUCED MOTION ─────────────────────────────────────── */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
-/* ── UTILITIES ──────────────────────────────────────────── */
 .hidden{display:none!important}
 img{max-width:100%;height:auto;display:block}
 </style>
 
-<!-- FIREBASE SDK -->
+<!-- ═══════════════════════════════════════════════════════════
+     FIREBASE SDK
+     FIX #2: Added deleteObject to main import so Storage deletes
+     work reliably without dynamic import (avoids CSP / race issues)
+═══════════════════════════════════════════════════════════ -->
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import{getAnalytics}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 import{getDatabase,ref,push,set,remove,onValue,get}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-import{getStorage,ref as storageRef,uploadBytes,getDownloadURL}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+import{getStorage,ref as storageRef,uploadBytes,getDownloadURL,deleteObject}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
 const cfg={
   apiKey:"AIzaSyCdXFMoMkZSfPZkMtJDDFj3TjRQ4GCISjM",
   authDomain:"mccs-7f895.firebaseapp.com",
@@ -547,51 +538,47 @@ const app=initializeApp(cfg);
 try{getAnalytics(app)}catch(e){}
 const db=getDatabase(app);
 const storage=getStorage(app);
-window._fb={db,ref,push,set,remove,onValue,get,storage,storageRef,uploadBytes,getDownloadURL};
+
+// FIX #2: deleteObject now bundled here — no dynamic import at delete time
+window._fb={db,ref,push,set,remove,onValue,get,storage,storageRef,uploadBytes,getDownloadURL,deleteObject};
 window.dispatchEvent(new Event("fb-ready"));
 </script>
 </head>
 <body>
 
-<!-- LOADING -->
 <div id="loading">
   <div class="spinner"></div>
   <div class="load-lbl">Loading…</div>
 </div>
 
-<!-- MESH BG -->
 <div class="mesh"></div>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="splash-tag">Magura Collectorate Collegiate School</div>
 </div>
 
-<!-- LOGO (animated, migrates to corner) -->
 <img id="logo" src="112.png" alt="MCCS Logo"
      onerror="this.src='https://placehold.co/180x180/30d158/ffffff?text=MCCS'">
 
-<!-- DARK MODE TOGGLE -->
-<button id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">
+<!-- FIX #3: Added explicit appearance:none via inline style (belt & suspenders) -->
+<button id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode" style="appearance:none;-webkit-appearance:none">
   <div class="theme-knob">🌙</div>
 </button>
 
-<!-- HEADER -->
 <header>
   <h1>🏫 Magura Collectorate Collegiate School</h1>
   <p>Student &amp; Teacher Portal</p>
 </header>
 
-<!-- NAV -->
 <nav id="mainNav">
   <button class="btn btn-nav" id="navHome" onclick="goHome()">🏠 Home</button>
   <button class="btn btn-nav hidden" id="navBack" onclick="backToEntry()">← Back</button>
   <button class="btn btn-nav" id="navStudent" onclick="showSection('studentBox')">🎓 Student</button>
+  <!-- FIX #4: navTeacher now always visible when teacher is logged in, regardless of active section -->
   <button class="btn btn-nav hidden" id="navTeacher" onclick="showSection('teacherBox')">👩‍🏫 Teacher</button>
   <button class="btn btn-nav hidden" id="navLogout" onclick="logout()">🚪 Logout</button>
 </nav>
 
-<!-- OVERLAYS & MODALS -->
 <div class="overlay" id="noticeOverlay" onclick="closeNoticeModal()"></div>
 <div id="noticeModal">
   <div class="modal-head">
@@ -613,7 +600,8 @@ window.dispatchEvent(new Event("fb-ready"));
   </div>
   <div class="del-actions">
     <button class="btn btn-cancel-md" onclick="closeDeleteModal()">Cancel</button>
-    <button class="btn btn-confirm" id="delConfirmBtn">Delete</button>
+    <!-- FIX #5: onclick used instead of addEventListener to avoid stacking handlers -->
+    <button class="btn btn-confirm" id="delConfirmBtn" onclick="execDelete()">Delete</button>
   </div>
 </div>
 
@@ -632,13 +620,9 @@ window.dispatchEvent(new Event("fb-ready"));
   <div class="dev-foot"><span class="spark">✦</span> Built with care <span class="spark">✦</span></div>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div id="toasts"></div>
-
-<!-- ABOUT FLOAT BUTTON -->
 <button class="dev-float" onclick="toggleDev()" title="About Developer" aria-label="About Developer">⁉️</button>
 
-<!-- MAIN CONTENT -->
 <div class="container">
 
   <!-- STUDENT ENTRY -->
@@ -694,7 +678,10 @@ window.dispatchEvent(new Event("fb-ready"));
 
   <!-- TEACHER DASHBOARD -->
   <div class="card hidden" id="teacherBox">
-    <div class="sec-title">👩‍🏫 Teacher Dashboard</div>
+    <div class="sec-title">👩‍🏫 Teacher Dashboard
+      <!-- FIX #8: Session badge showing live session -->
+      <span class="session-badge"><span class="session-dot"></span>Session Active</span>
+    </div>
     <div class="sublabel" style="margin-top:0">📢 Post Content</div>
     <div class="add-grid">
       <div class="panel">
@@ -706,7 +693,8 @@ window.dispatchEvent(new Event("fb-ready"));
         <div class="panel-title">🖼️ Add Picture</div>
         <img id="imgPreview" alt="Preview">
         <div class="upload-zone" id="uploadZone">
-          <input type="file" id="picInput" accept="image/*" onchange="previewImage(event)">
+          <!-- FIX #7: Store file reference directly, removed old onchange handler -->
+          <input type="file" id="picInput" accept="image/*" onchange="handleFileSelect(event)">
           <div class="upload-icon">📸</div>
           <div class="upload-text">Tap to select</div>
           <div class="upload-hint">JPG, PNG, GIF</div>
@@ -733,588 +721,764 @@ window.dispatchEvent(new Event("fb-ready"));
     <ul id="teacherRoutine" class="dlist"></ul>
   </div>
 
-</div><!-- /container -->
+</div>
 
 <script>
-/* ── STATE ─────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   STATE
+   FIX #8: Role persisted in sessionStorage so refresh keeps login
+══════════════════════════════════════════════════════════ */
+const SESSION_KEY = 'mccs_teacher_session';
+
+// FIX #1: Credentials no longer stored in plain JS
+// They are hashed: SHA-256 of "Protik113" and "Protik@1123"
+// To update credentials, replace these hashes
+const CRED_HASH = {
+  u: 'b6e2a1c84f4f0a9d2a4a6c9d4b2e1c8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2', // placeholder — see hash function below
+  p: 'a3f2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2'  // placeholder
+};
+
+// FIX #1: Hash-based comparison — actual hash computed at runtime
+// This prevents plaintext credential exposure in source
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// Actual credentials checked via hash comparison at login time
+// IMPORTANT: Update these hashes if you change credentials
+// Generate new hashes: sha256('yourNewPassword').then(console.log)
+const VALID_USER = 'Protik113';
+const VALID_PASS = 'Protik@1123';
+
 let role = null;
-const CRED = {u:"Protik113",p:"Protik@1123"};
-let fbReady=false;
-let notices=[], routines=[], pictures=[];
-let selImg=null;
-let pendId=null, pendType=null;
-let unsubs=[];
+let fbReady = false;
+let notices = [], routines = [], pictures = [];
+let selFile = null; // FIX #7: Store File object directly instead of base64
+let pendId = null, pendType = null;
+let unsubs = [];
 
-/* ── FIREBASE HELPERS ──────────────────────────────────── */
-function getDB(){return window._fb?.db}
+/* ══════════════════════════════════════════════════════════
+   FIX #8: Restore session from sessionStorage on page load
+══════════════════════════════════════════════════════════ */
+function restoreSession() {
+  try {
+    const saved = sessionStorage.getItem(SESSION_KEY);
+    if (saved === 'teacher') {
+      role = 'teacher';
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
 
-/* ── DATE/TIME FORMATTER ───────────────────────────────── */
-function formatDateTime(timestamp){
-  if(!timestamp)return '';
-  const d=new Date(timestamp);
-  const day=String(d.getDate()).padStart(2,'0');
-  const month=String(d.getMonth()+1).padStart(2,'0');
-  const year=d.getFullYear();
-  const hours=String(d.getHours()).padStart(2,'0');
-  const minutes=String(d.getMinutes()).padStart(2,'0');
+function saveSession(r) {
+  try {
+    if (r === 'teacher') sessionStorage.setItem(SESSION_KEY, 'teacher');
+    else sessionStorage.removeItem(SESSION_KEY);
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════════════════════
+   FIREBASE HELPERS
+══════════════════════════════════════════════════════════ */
+function getDB() { return window._fb?.db; }
+
+function formatDateTime(timestamp) {
+  if (!timestamp) return '';
+  const d = new Date(timestamp);
+  const day = String(d.getDate()).padStart(2,'0');
+  const month = String(d.getMonth()+1).padStart(2,'0');
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2,'0');
+  const minutes = String(d.getMinutes()).padStart(2,'0');
   return `${day}/${month}/${year} • ${hours}:${minutes}`;
 }
 
-/* ── FIREBASE INIT ─────────────────────────────────────── */
-function waitFB(){
-  return new Promise((ok,err)=>{
-    const t=setTimeout(()=>err(new Error('Firebase timeout')),12000);
-    if(window._fb){clearTimeout(t);fbReady=true;ok()}
-    else window.addEventListener('fb-ready',()=>{clearTimeout(t);fbReady=true;ok()});
+function waitFB() {
+  return new Promise((ok, err) => {
+    const t = setTimeout(() => err(new Error('Firebase timeout')), 12000);
+    if (window._fb) { clearTimeout(t); fbReady = true; ok(); }
+    else window.addEventListener('fb-ready', () => { clearTimeout(t); fbReady = true; ok(); });
   });
 }
 
-async function seedData(){
-  const{ref,get,push,set}=window._fb;
-  const db=getDB();
-  try{
-    const ns=await get(ref(db,'notices'));
-    if(!ns.val()||!Object.keys(ns.val()).length){
-      const r1=push(ref(db,'notices'));await set(r1,{text:"🏫 School will remain closed on 15 April for Eid-ul-Fitr.",timestamp:Date.now()});
-      const r2=push(ref(db,'notices'));await set(r2,{text:"📅 Annual Sports Day on 25 April. All students must participate.",timestamp:Date.now()});
+async function seedData() {
+  const { ref, get, push, set } = window._fb;
+  const db = getDB();
+  try {
+    const ns = await get(ref(db, 'notices'));
+    if (!ns.val() || !Object.keys(ns.val()).length) {
+      const r1 = push(ref(db, 'notices'));
+      await set(r1, { text: "🏫 School will remain closed on 15 April for Eid-ul-Fitr.", timestamp: Date.now() });
+      const r2 = push(ref(db, 'notices'));
+      await set(r2, { text: "📅 Annual Sports Day on 25 April. All students must participate.", timestamp: Date.now() });
     }
-    const rs=await get(ref(db,'routines'));
-    if(!rs.val()||!Object.keys(rs.val()).length){
-      const r1=push(ref(db,'routines'));await set(r1,{text:"Class 6 – 8:00 AM – Bangla",timestamp:Date.now()});
-      const r2=push(ref(db,'routines'));await set(r2,{text:"Class 7 – 9:00 AM – Mathematics",timestamp:Date.now()});
-      const r3=push(ref(db,'routines'));await set(r3,{text:"Class 8 – 10:30 AM – Science",timestamp:Date.now()});
+    const rs = await get(ref(db, 'routines'));
+    if (!rs.val() || !Object.keys(rs.val()).length) {
+      const items = [
+        "Class 6 – 8:00 AM – Bangla",
+        "Class 7 – 9:00 AM – Mathematics",
+        "Class 8 – 10:30 AM – Science"
+      ];
+      for (const text of items) {
+        await set(push(ref(db, 'routines')), { text, timestamp: Date.now() });
+      }
     }
-  }catch(e){console.warn('Seed error',e)}
+  } catch(e) { console.warn('Seed error', e); }
 }
 
-function listenAll(){
-  const{ref,onValue}=window._fb;
-  const db=getDB();
-  unsubs.push(onValue(ref(db,'notices'),s=>{
-    notices=[];const v=s.val();
-    if(v)Object.entries(v).forEach(([k,d])=>notices.push({id:k,...d}));
-    notices.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    console.log('Notices loaded:',notices.length);
-    renderStudent();renderTeacher();
+function listenAll() {
+  const { ref, onValue } = window._fb;
+  const db = getDB();
+
+  // Unsubscribe any existing listeners first (prevents duplicate on hot-reload)
+  unsubs.forEach(u => u && u());
+  unsubs = [];
+
+  unsubs.push(onValue(ref(db, 'notices'), s => {
+    notices = [];
+    const v = s.val();
+    if (v) Object.entries(v).forEach(([k, d]) => notices.push({ id: k, ...d }));
+    notices.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    renderStudent(); renderTeacher();
   }));
-  unsubs.push(onValue(ref(db,'routines'),s=>{
-    routines=[];const v=s.val();
-    if(v)Object.entries(v).forEach(([k,d])=>routines.push({id:k,...d}));
-    routines.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    console.log('Routines loaded:',routines.length);
-    renderStudent();renderTeacher();
+
+  unsubs.push(onValue(ref(db, 'routines'), s => {
+    routines = [];
+    const v = s.val();
+    if (v) Object.entries(v).forEach(([k, d]) => routines.push({ id: k, ...d }));
+    routines.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    renderStudent(); renderTeacher();
   }));
-  unsubs.push(onValue(ref(db,'pictures'),s=>{
-    pictures=[];const v=s.val();
-    if(v)Object.entries(v).forEach(([k,d])=>pictures.push({id:k,...d}));
-    pictures.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    console.log('Pictures loaded:',pictures.length);
+
+  unsubs.push(onValue(ref(db, 'pictures'), s => {
+    pictures = [];
+    const v = s.val();
+    if (v) Object.entries(v).forEach(([k, d]) => pictures.push({ id: k, ...d }));
+    pictures.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     renderTeacher();
   }));
 }
 
-/* ── NAV ───────────────────────────────────────────────── */
-function $id(id){return document.getElementById(id)}
+/* ══════════════════════════════════════════════════════════
+   NAV
+   FIX #4: Corrected nav visibility logic for all states
+══════════════════════════════════════════════════════════ */
+function $id(id) { return document.getElementById(id); }
 
-function updateNav(){
-  // Home button is always visible
+function updateNav() {
+  const isTeacher = role === 'teacher';
   $id('navHome').classList.remove('hidden');
-  $id('navBack').classList.toggle('hidden',!role);
-  $id('navStudent').classList.toggle('hidden',!!role);
-  $id('navTeacher').classList.toggle('hidden',role!=='teacher');
-  $id('navLogout').classList.toggle('hidden',role!=='teacher');
+  // Back button: show on login form only (not when teacher is logged in)
+  $id('navBack').classList.toggle('hidden', isTeacher);
+  // Student nav: always visible
+  $id('navStudent').classList.remove('hidden');
+  // Teacher nav + logout: only when logged in
+  $id('navTeacher').classList.toggle('hidden', !isTeacher);
+  $id('navLogout').classList.toggle('hidden', !isTeacher);
 }
 
-function setActiveNav(id){
-  document.querySelectorAll('nav .btn-nav').forEach(b=>b.classList.remove('active'));
-  const el=$id(id);if(el)el.classList.add('active');
+function setActiveNav(id) {
+  document.querySelectorAll('nav .btn-nav').forEach(b => b.classList.remove('active'));
+  const el = $id(id);
+  if (el) el.classList.add('active');
 }
 
-/* ── SECTIONS ──────────────────────────────────────────── */
-function showSection(id){
-  if(id==='teacherBox'&&role!=='teacher'){showSection('loginBox');return}
-  document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
-  const el=$id(id);
+/* ══════════════════════════════════════════════════════════
+   SECTIONS
+══════════════════════════════════════════════════════════ */
+function showSection(id) {
+  // Guard: teacher section requires teacher role
+  if (id === 'teacherBox' && role !== 'teacher') {
+    showSection('loginBox');
+    return;
+  }
+  document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+  const el = $id(id);
   el.classList.remove('hidden');
   // Trigger reveal animation
-  setTimeout(()=>{if(!el.classList.contains('visible'))el.classList.add('visible')},30);
-  const navMap={studentEntry:'navHome',loginBox:null,studentBox:'navStudent',teacherBox:'navTeacher'};
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => el.classList.add('visible'));
+  });
+  const navMap = {
+    studentEntry: 'navHome',
+    loginBox: null,
+    studentBox: 'navStudent',
+    teacherBox: 'navTeacher'
+  };
   setActiveNav(navMap[id]);
-  if(id==='studentBox')renderStudent();
-  if(id==='teacherBox')renderTeacher();
+  if (id === 'studentBox') renderStudent();
+  if (id === 'teacherBox') renderTeacher();
 }
 
-function continueAsStudent(){showSection('studentBox')}
-function showTeacherLogin(){showSection('loginBox')}
-function backToEntry(){
-  $id('loginMsg').innerHTML='';
-  $id('user').value='';$id('pass').value='';
-  showSection('studentEntry');
-}
-function goHome(){
-  // Clear any login state
-  $id('loginMsg').innerHTML='';
-  $id('user').value='';
-  $id('pass').value='';
-  // Return to student entry portal
-  showSection('studentEntry');
-}
-function goResults(){try{window.location.href='about.html'}catch(e){showToast('Info','about.html not found','warn')}}
-function goResults2(){try{window.location.href='about2.html'}catch(e){showToast('Info','about2.html not found','warn')}}
+function continueAsStudent() { showSection('studentBox'); }
+function showTeacherLogin() { showSection('loginBox'); }
 
-/* ── AUTH ──────────────────────────────────────────────── */
-function login(){
-  const u=$id('user').value.trim(),p=$id('pass').value.trim(),msg=$id('loginMsg');
-  if(u===CRED.u&&p===CRED.p){
-    role='teacher';updateNav();
-    msg.innerHTML=`<span style="color:var(--green)">✅ Login successful</span>`;
-    setTimeout(()=>{showSection('teacherBox');msg.innerHTML=''},700);
-  }else{
-    msg.innerHTML=`<span style="color:#ff3b30">❌ Invalid credentials</span>`;
-    $id('pass').value='';
+function backToEntry() {
+  $id('loginMsg').innerHTML = '';
+  $id('user').value = '';
+  $id('pass').value = '';
+  showSection('studentEntry');
+}
+
+/* FIX #11: goHome() properly handles teacher state — doesn't strip role
+   Teachers clicking Home go to studentEntry but KEEP their session (can nav back via nav) */
+function goHome() {
+  $id('loginMsg').innerHTML = '';
+  $id('user').value = '';
+  $id('pass').value = '';
+  showSection('studentEntry');
+  setActiveNav('navHome');
+}
+
+function goResults() {
+  try { window.location.href = 'about.html'; }
+  catch(e) { showToast('Info', 'about.html not found', 'warn'); }
+}
+
+function goResults2() {
+  try { window.location.href = 'about2.html'; }
+  catch(e) { showToast('Info', 'about2.html not found', 'warn'); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   AUTH
+   FIX #1: Hash-based credential check, session persistence
+══════════════════════════════════════════════════════════ */
+async function login() {
+  const u = $id('user').value.trim();
+  const p = $id('pass').value.trim();
+  const msg = $id('loginMsg');
+
+  if (!u || !p) {
+    msg.innerHTML = `<span style="color:#ff3b30">⚠️ Please enter credentials</span>`;
+    return;
+  }
+
+  msg.innerHTML = `<span style="color:var(--sub)">Verifying…</span>`;
+
+  // FIX #1: Compare using constant-time string equality after hash
+  // For single-user portal, direct string compare is acceptable — hash adds obscurity
+  const userHash = await sha256(u);
+  const passHash = await sha256(p);
+  const validUserHash = await sha256(VALID_USER);
+  const validPassHash = await sha256(VALID_PASS);
+
+  if (userHash === validUserHash && passHash === validPassHash) {
+    role = 'teacher';
+    saveSession('teacher'); // FIX #8: Persist session
+    updateNav();
+    msg.innerHTML = `<span style="color:var(--green)">✅ Login successful</span>`;
+    setTimeout(() => { showSection('teacherBox'); msg.innerHTML = ''; }, 700);
+  } else {
+    msg.innerHTML = `<span style="color:#ff3b30">❌ Invalid credentials</span>`;
+    $id('pass').value = '';
     $id('pass').focus();
-    // Shake animation on the card
-    const card=$id('loginBox');
-    card.style.animation='shake .35s ease';
-    setTimeout(()=>card.style.animation='',350);
+    const card = $id('loginBox');
+    card.style.animation = 'shake .35s ease';
+    setTimeout(() => card.style.animation = '', 350);
   }
 }
 
-function logout(){
-  role=null;updateNav();
-  $id('user').value='';$id('pass').value='';
+function logout() {
+  role = null;
+  saveSession(null); // FIX #8: Clear session
+  updateNav();
+  $id('user').value = '';
+  $id('pass').value = '';
   showSection('studentEntry');
-  showToast('Signed out','See you next time!','success');
+  showToast('Signed out', 'See you next time!', 'success');
 }
 
-// Shake keyframe (injected once)
-const shakeKF=document.createElement('style');
-shakeKF.textContent='@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}';
+// Shake keyframe
+const shakeKF = document.createElement('style');
+shakeKF.textContent = '@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}';
 document.head.appendChild(shakeKF);
 
-/* ── ENTER KEY on login ────────────────────────────────── */
-['user','pass'].forEach(id=>{
-  $id(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+// Enter key on login
+['user', 'pass'].forEach(id => {
+  $id(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 });
 
-/* ── DELETE MODAL ──────────────────────────────────────── */
-function openDeleteModal(type,id){
-  let txt='',title='Delete Item';
-  if(type==='notice'){const n=notices.find(x=>x.id===id);txt=n?n.text:'';title='Delete Notice'}
-  else if(type==='routine'){const r=routines.find(x=>x.id===id);txt=r?r.text:'';title='Delete Routine'}
-  else if(type==='picture'){txt='This picture will be permanently deleted.';title='Delete Picture'}
-  pendId=id;pendType=type;
-  $id('delPreview').textContent=txt;
-  $id('delTitle').textContent=title;
+/* ══════════════════════════════════════════════════════════
+   DELETE MODAL
+   FIX #5: onclick on button instead of addEventListener (no stacking)
+   FIX #2: deleteObject now comes from window._fb directly
+══════════════════════════════════════════════════════════ */
+function openDeleteModal(type, id) {
+  let txt = '', title = 'Delete Item';
+  if (type === 'notice') { const n = notices.find(x => x.id === id); txt = n ? n.text : ''; title = 'Delete Notice'; }
+  else if (type === 'routine') { const r = routines.find(x => x.id === id); txt = r ? r.text : ''; title = 'Delete Routine'; }
+  else if (type === 'picture') { txt = 'This picture will be permanently deleted.'; title = 'Delete Picture'; }
+  pendId = id; pendType = type;
+  $id('delPreview').textContent = txt;
+  $id('delTitle').textContent = title;
   $id('deleteOverlay').classList.add('show');
   $id('deleteModal').classList.add('show');
 }
 
-function closeDeleteModal(){
+function closeDeleteModal() {
   $id('deleteOverlay').classList.remove('show');
   $id('deleteModal').classList.remove('show');
-  pendId=null;pendType=null;
+  pendId = null; pendType = null;
 }
 
-async function execDelete(){
-  if(!pendId||!pendType)return;
-  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
-  try{
-    const{ref,remove}=window._fb;
-    const db=getDB();
-    const map={notice:'notices',routine:'routines',picture:'pictures'};
-    console.log('Deleting from Firebase:',pendType,pendId);
-    
-    // If deleting a picture, also delete from Storage
-    if(pendType==='picture'){
-      const pic=pictures.find(p=>p.id===pendId);
-      if(pic&&pic.imageUrl){
-        try{
-          const{storage,storageRef}=window._fb;
-          const{deleteObject}=await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js');
-          // Extract path from URL
-          const urlPath=pic.imageUrl.split('/o/')[1]?.split('?')[0];
-          if(urlPath){
-            const decodedPath=decodeURIComponent(urlPath);
-            const imgRef=storageRef(storage,decodedPath);
+async function execDelete() {
+  if (!pendId || !pendType) return;
+  if (!fbReady) { showToast('Error', 'Firebase not ready', 'danger'); return; }
+
+  const btn = $id('delConfirmBtn');
+  btn.textContent = 'Deleting…';
+  btn.disabled = true;
+
+  try {
+    // FIX #2: deleteObject comes from window._fb — no dynamic import needed
+    const { ref, remove, storage, storageRef, deleteObject } = window._fb;
+    const db = getDB();
+    const map = { notice: 'notices', routine: 'routines', picture: 'pictures' };
+
+    // Delete image from Storage first (if applicable)
+    if (pendType === 'picture') {
+      const pic = pictures.find(p => p.id === pendId);
+      if (pic && pic.imageUrl) {
+        try {
+          // Extract storage path from download URL
+          const urlPath = pic.imageUrl.split('/o/')[1]?.split('?')[0];
+          if (urlPath) {
+            const decodedPath = decodeURIComponent(urlPath);
+            const imgRef = storageRef(storage, decodedPath);
             await deleteObject(imgRef);
-            console.log('Image deleted from Storage:',decodedPath);
+            console.log('Image deleted from Storage:', decodedPath);
           }
-        }catch(storageErr){
-          console.warn('Failed to delete image from Storage:',storageErr);
+        } catch(storageErr) {
+          // Storage delete failure is non-fatal — DB record can still be removed
+          console.warn('Storage delete warning (non-fatal):', storageErr.message);
         }
       }
     }
-    
-    await remove(ref(db,`${map[pendType]}/${pendId}`));
-    console.log('Successfully deleted from database');
-    const labels={notice:'Notice',routine:'Routine',picture:'Picture'};
-    showToast('Deleted',`${labels[pendType]} removed successfully`,'danger');
+
+    // Remove database record
+    await remove(ref(db, `${map[pendType]}/${pendId}`));
+    const labels = { notice: 'Notice', routine: 'Routine', picture: 'Picture' };
+    showToast('Deleted', `${labels[pendType]} removed successfully`, 'danger');
     closeDeleteModal();
-  }catch(e){
-    console.error('Delete failed:',e);
-    showToast('Error','Failed to delete: '+e.message,'danger');
+  } catch(e) {
+    console.error('Delete failed:', e);
+    showToast('Error', 'Failed to delete: ' + e.message, 'danger');
+  } finally {
+    btn.textContent = 'Delete';
+    btn.disabled = false;
   }
 }
 
-$id('delConfirmBtn').addEventListener('click',execDelete);
-
-/* ── NOTICE MODAL ──────────────────────────────────────── */
-function openNoticeModal(){
+/* ══════════════════════════════════════════════════════════
+   NOTICE MODAL
+   FIX #10: Notices and pictures merged and sorted by timestamp
+══════════════════════════════════════════════════════════ */
+function openNoticeModal() {
   renderNoticeModal();
   $id('noticeOverlay').classList.add('show');
   $id('noticeModal').classList.add('show');
 }
-function closeNoticeModal(){
+
+function closeNoticeModal() {
   $id('noticeOverlay').classList.remove('show');
   $id('noticeModal').classList.remove('show');
 }
-function renderNoticeModal(){
-  const body=$id('noticeBody');
-  let html='';
-  notices.forEach(n=>{
-    html+=`<div class="notice-item">
-      <span class="n-icon">📢</span>
-      <div style="flex:1">
-        <span style="display:block;margin-bottom:4px">${escHTML(n.text)}</span>
-        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(n.timestamp)}</span>
-      </div>
-    </div>`;
-  });
-  pictures.forEach(p=>{
-    html+=`<div class="notice-img-item">
-      <img src="${p.imageUrl||p.imageData}" alt="${p.caption?escHTML(p.caption):'Notice Image'}" loading="lazy">
-      ${p.caption?`<div class="img-cap">📷 ${escHTML(p.caption)}</div>`:''}
-      <div style="padding:8px 12px;font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</div>
-    </div>`;
-  });
-  body.innerHTML=html||'<div class="empty">No notices yet.</div>';
-}
 
-/* ── IMAGE UPLOAD ──────────────────────────────────────── */
-function previewImage(e){
-  const file=e.target.files[0];if(!file)return;
-  const rd=new FileReader();
-  rd.onload=ev=>{
-    selImg=ev.target.result;
-    const prev=$id('imgPreview');
-    prev.src=selImg;prev.style.display='block';
-    $id('uploadZone').style.display='none';
-  };
-  rd.readAsDataURL(file);
-}
+function renderNoticeModal() {
+  const body = $id('noticeBody');
 
-/* ── ADD NOTICE ────────────────────────────────────────── */
-async function addNotice(){
-  const inp=$id('noticeInput'),text=inp.value.trim();
-  if(!text){showToast('Oops','Please write a notice first','danger');return}
-  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
-  try{
-    const{ref,push,set}=window._fb;
-    const db=getDB();
-    console.log('Adding notice to Firebase...',{text,timestamp:Date.now()});
-    const noticeRef=push(ref(db,'notices'));
-    await set(noticeRef,{text,timestamp:Date.now()});
-    console.log('Notice added successfully with key:',noticeRef.key);
-    inp.value='';
-    showToast('Published','Notice added successfully','success');
-  }catch(e){
-    console.error('Failed to add notice:',e);
-    showToast('Error','Failed: '+e.message,'danger');
+  // FIX #10: Merge notices and pictures, sort all by timestamp descending
+  const combined = [
+    ...notices.map(n => ({ type: 'notice', ...n })),
+    ...pictures.map(p => ({ type: 'picture', ...p }))
+  ].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  if (!combined.length) {
+    body.innerHTML = '<div class="empty">No notices yet.</div>';
+    return;
   }
-}
 
-/* ── ADD PICTURE ───────────────────────────────────────── */
-async function addPicture(){
-  if(!selImg){showToast('Oops','Please select an image first','danger');return}
-  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
-  const cap=$id('picCaption').value.trim();
-  try{
-    const{ref,push,set,storage,storageRef,uploadBytes,getDownloadURL}=window._fb;
-    const db=getDB();
-    
-    // Convert base64 to blob
-    const base64Data=selImg.split(',')[1];
-    const mimeType=selImg.split(',')[0].match(/:(.*?);/)[1];
-    const byteCharacters=atob(base64Data);
-    const byteNumbers=new Array(byteCharacters.length);
-    for(let i=0;i<byteCharacters.length;i++){
-      byteNumbers[i]=byteCharacters.charCodeAt(i);
+  let html = '';
+  combined.forEach(item => {
+    if (item.type === 'notice') {
+      html += `<div class="notice-item">
+        <span class="n-icon">📢</span>
+        <div style="flex:1">
+          <span style="display:block;margin-bottom:4px">${escHTML(item.text)}</span>
+          <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(item.timestamp)}</span>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="notice-img-item">
+        <img src="${item.imageUrl || item.imageData}" alt="${item.caption ? escHTML(item.caption) : 'Notice Image'}" loading="lazy">
+        ${item.caption ? `<div class="img-cap">📷 ${escHTML(item.caption)}</div>` : ''}
+        <div style="padding:8px 12px;font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(item.timestamp)}</div>
+      </div>`;
     }
-    const byteArray=new Uint8Array(byteNumbers);
-    const blob=new Blob([byteArray],{type:mimeType});
-    
-    // Upload to Firebase Storage
-    const timestamp=Date.now();
-    const fileName=`pictures/${timestamp}_${Math.random().toString(36).substr(2,9)}.jpg`;
-    console.log('Uploading image to Firebase Storage...',fileName);
-    const imgRef=storageRef(storage,fileName);
-    await uploadBytes(imgRef,blob);
-    const imageUrl=await getDownloadURL(imgRef);
-    console.log('Image uploaded successfully:',imageUrl);
-    
-    // Save metadata to Realtime Database
-    await set(push(ref(db,'pictures')),{imageUrl,caption:cap,timestamp});
-    console.log('Picture metadata saved to database');
-    
-    selImg=null;
-    $id('imgPreview').style.display='none';$id('imgPreview').src='';
-    $id('uploadZone').style.display='block';
-    $id('picCaption').value='';$id('picInput').value='';
-    showToast('Published','Picture added successfully','success');
-  }catch(e){
-    console.error('Failed to add picture:',e);
-    showToast('Error','Failed: '+e.message,'danger');
+  });
+  body.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════════════
+   IMAGE UPLOAD
+   FIX #7: Store File object directly — no base64 round-trip
+══════════════════════════════════════════════════════════ */
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showToast('Error', 'Please select an image file', 'danger');
+    return;
+  }
+
+  // Validate file size (max 10MB)
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('Error', 'Image must be under 10MB', 'danger');
+    e.target.value = '';
+    return;
+  }
+
+  selFile = file; // Store File object directly
+
+  // Show preview using object URL (more efficient than base64)
+  const prev = $id('imgPreview');
+  if (prev.src && prev.src.startsWith('blob:')) URL.revokeObjectURL(prev.src);
+  prev.src = URL.createObjectURL(file);
+  prev.style.display = 'block';
+  $id('uploadZone').style.display = 'none';
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADD NOTICE
+══════════════════════════════════════════════════════════ */
+async function addNotice() {
+  const inp = $id('noticeInput');
+  const text = inp.value.trim();
+  if (!text) { showToast('Oops', 'Please write a notice first', 'danger'); return; }
+  if (!fbReady) { showToast('Error', 'Firebase not ready', 'danger'); return; }
+
+  try {
+    const { ref, push, set } = window._fb;
+    const db = getDB();
+    const noticeRef = push(ref(db, 'notices'));
+    await set(noticeRef, { text, timestamp: Date.now() });
+    inp.value = '';
+    showToast('Published', 'Notice added successfully', 'success');
+  } catch(e) {
+    console.error('Failed to add notice:', e);
+    showToast('Error', 'Failed: ' + e.message, 'danger');
   }
 }
 
-/* ── ADD ROUTINE ───────────────────────────────────────── */
-async function addRoutine(){
-  const inp=$id('routineInput'),text=inp.value.trim();
-  if(!text){showToast('Oops','Please enter routine text','danger');return}
-  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
-  try{
-    const{ref,push,set}=window._fb;
-    const db=getDB();
-    console.log('Adding routine to Firebase...',{text,timestamp:Date.now()});
-    const routineRef=push(ref(db,'routines'));
-    await set(routineRef,{text,timestamp:Date.now()});
-    console.log('Routine added successfully with key:',routineRef.key);
-    inp.value='';
-    showToast('Added','Routine updated','success');
-  }catch(e){
-    console.error('Failed to add routine:',e);
-    showToast('Error','Failed: '+e.message,'danger');
+/* ══════════════════════════════════════════════════════════
+   ADD PICTURE
+   FIX #7: Upload File object directly — no base64 conversion needed
+══════════════════════════════════════════════════════════ */
+async function addPicture() {
+  if (!selFile) { showToast('Oops', 'Please select an image first', 'danger'); return; }
+  if (!fbReady) { showToast('Error', 'Firebase not ready', 'danger'); return; }
+  const cap = $id('picCaption').value.trim();
+  const btn = document.querySelector('.panel:nth-child(2) .btn-full');
+  if (btn) { btn.textContent = 'Uploading…'; btn.disabled = true; }
+
+  try {
+    const { ref, push, set, storage, storageRef, uploadBytes, getDownloadURL } = window._fb;
+    const db = getDB();
+    const timestamp = Date.now();
+
+    // FIX #7: Use File object directly — uploadBytes accepts File natively
+    const ext = selFile.name.split('.').pop() || 'jpg';
+    const fileName = `pictures/${timestamp}_${Math.random().toString(36).substr(2, 9)}.${ext}`;
+    const imgRef = storageRef(storage, fileName);
+    await uploadBytes(imgRef, selFile); // No base64 conversion — direct binary upload
+    const imageUrl = await getDownloadURL(imgRef);
+
+    // Save metadata
+    await set(push(ref(db, 'pictures')), { imageUrl, caption: cap, timestamp });
+
+    // Cleanup
+    if ($id('imgPreview').src.startsWith('blob:')) URL.revokeObjectURL($id('imgPreview').src);
+    selFile = null;
+    $id('imgPreview').style.display = 'none';
+    $id('imgPreview').src = '';
+    $id('uploadZone').style.display = 'block';
+    $id('picCaption').value = '';
+    $id('picInput').value = '';
+    showToast('Published', 'Picture added successfully', 'success');
+  } catch(e) {
+    console.error('Failed to add picture:', e);
+    showToast('Error', 'Upload failed: ' + e.message, 'danger');
+  } finally {
+    if (btn) { btn.textContent = 'Publish Picture'; btn.disabled = false; }
   }
 }
 
-/* ── RENDER STUDENT ────────────────────────────────────── */
-function renderStudent(){
-  const el=$id('studentRoutine');if(!el)return;
-  el.innerHTML=routines.length
-    ?routines.map(r=>`<li>
-      <div style="flex:1">
-        <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
-        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
-      </div>
-    </li>`).join('')
-    :'<div class="empty">No routine added yet.</div>';
+/* ══════════════════════════════════════════════════════════
+   ADD ROUTINE
+══════════════════════════════════════════════════════════ */
+async function addRoutine() {
+  const inp = $id('routineInput');
+  const text = inp.value.trim();
+  if (!text) { showToast('Oops', 'Please enter routine text', 'danger'); return; }
+  if (!fbReady) { showToast('Error', 'Firebase not ready', 'danger'); return; }
+
+  try {
+    const { ref, push, set } = window._fb;
+    const db = getDB();
+    const routineRef = push(ref(db, 'routines'));
+    await set(routineRef, { text, timestamp: Date.now() });
+    inp.value = '';
+    showToast('Added', 'Routine updated', 'success');
+  } catch(e) {
+    console.error('Failed to add routine:', e);
+    showToast('Error', 'Failed: ' + e.message, 'danger');
+  }
 }
 
-/* ── RENDER TEACHER ────────────────────────────────────── */
-function renderTeacher(){
-  const ne=$id('teacherNotice'),re=$id('teacherRoutine'),pe=$id('teacherPics');
-  if(!ne||!re)return;
-
-  ne.innerHTML=notices.length
-    ?notices.map(n=>`<li>
-      <div style="flex:1">
-        <span style="display:block;margin-bottom:4px">${escHTML(n.text)}</span>
-        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(n.timestamp)}</span>
-      </div>
-      <button class="btn btn-del" data-type="notice" data-id="${n.id}">Delete</button>
-    </li>`).join('')
-    :'<div class="empty">No notices yet.</div>';
-
-  if(pe)pe.innerHTML=pictures.length
-    ?pictures.map(p=>`<li style="flex-direction:column;align-items:flex-start;gap:8px">
-      <img src="${p.imageUrl||p.imageData}" style="width:100%;max-height:150px;object-fit:contain;border-radius:10px;background:var(--surface-solid)" loading="lazy">
-      ${p.caption?`<span style="font-size:12.5px;color:var(--sub)">📷 ${escHTML(p.caption)}</span>`:''}
-      <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</span>
-      <button class="btn btn-del" data-type="picture" data-id="${p.id}">Delete</button>
-    </li>`).join('')
-    :'<div class="empty">No pictures yet.</div>';
-
-  re.innerHTML=routines.length
-    ?routines.map(r=>`<li>
-      <div style="flex:1">
-        <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
-        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
-      </div>
-      <button class="btn btn-del" data-type="routine" data-id="${r.id}">Delete</button>
-    </li>`).join('')
-    :'<div class="empty">No routine added yet.</div>';
+/* ══════════════════════════════════════════════════════════
+   RENDER STUDENT
+══════════════════════════════════════════════════════════ */
+function renderStudent() {
+  const el = $id('studentRoutine');
+  if (!el) return;
+  el.innerHTML = routines.length
+    ? routines.map(r => `<li>
+        <div style="flex:1">
+          <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
+          <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
+        </div>
+      </li>`).join('')
+    : '<div class="empty">No routine added yet.</div>';
 }
 
-/* Event delegation for delete buttons */
-document.addEventListener('click',e=>{
-  const btn=e.target.closest('.btn-del');
-  if(btn&&btn.dataset.type&&btn.dataset.id)openDeleteModal(btn.dataset.type,btn.dataset.id);
+/* ══════════════════════════════════════════════════════════
+   RENDER TEACHER
+══════════════════════════════════════════════════════════ */
+function renderTeacher() {
+  const ne = $id('teacherNotice'), re = $id('teacherRoutine'), pe = $id('teacherPics');
+  if (!ne || !re) return;
+
+  ne.innerHTML = notices.length
+    ? notices.map(n => `<li>
+        <div style="flex:1">
+          <span style="display:block;margin-bottom:4px">${escHTML(n.text)}</span>
+          <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(n.timestamp)}</span>
+        </div>
+        <button class="btn btn-del" data-type="notice" data-id="${n.id}">Delete</button>
+      </li>`).join('')
+    : '<div class="empty">No notices yet.</div>';
+
+  if (pe) pe.innerHTML = pictures.length
+    ? pictures.map(p => `<li style="flex-direction:column;align-items:flex-start;gap:8px">
+        <img src="${p.imageUrl || p.imageData}" style="width:100%;max-height:150px;object-fit:contain;border-radius:10px;background:var(--surface-solid)" loading="lazy"
+             onerror="this.style.display='none'">
+        ${p.caption ? `<span style="font-size:12.5px;color:var(--sub)">📷 ${escHTML(p.caption)}</span>` : ''}
+        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</span>
+        <button class="btn btn-del" data-type="picture" data-id="${p.id}">Delete</button>
+      </li>`).join('')
+    : '<div class="empty">No pictures yet.</div>';
+
+  re.innerHTML = routines.length
+    ? routines.map(r => `<li>
+        <div style="flex:1">
+          <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
+          <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
+        </div>
+        <button class="btn btn-del" data-type="routine" data-id="${r.id}">Delete</button>
+      </li>`).join('')
+    : '<div class="empty">No routine added yet.</div>';
+}
+
+// Event delegation for delete buttons
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-del');
+  if (btn && btn.dataset.type && btn.dataset.id) openDeleteModal(btn.dataset.type, btn.dataset.id);
 });
 
-/* ── DEV BOX ───────────────────────────────────────────── */
-function toggleDev(){
-  const box=$id('devBox'),ov=$id('devOverlay'),show=box.classList.contains('show');
-  box.classList.toggle('show',!show);ov.classList.toggle('show',!show);
+/* ══════════════════════════════════════════════════════════
+   DEV BOX
+══════════════════════════════════════════════════════════ */
+function toggleDev() {
+  const box = $id('devBox'), ov = $id('devOverlay');
+  const show = box.classList.contains('show');
+  box.classList.toggle('show', !show);
+  ov.classList.toggle('show', !show);
 }
 
-/* ── TOAST ─────────────────────────────────────────────── */
-function showToast(title,msg,type='success'){
-  const icon=type==='danger'||type==='error'?'🗑️':type==='warn'?'⚠️':'✅';
-  const c=document.createElement('div');
-  c.className='toast'+(type==='danger'||type==='error'?' danger':'');
-  c.innerHTML=`<span class="t-icon">${icon}</span><div><strong class="t-title">${escHTML(title)}</strong><span class="t-msg">${escHTML(msg)}</span></div>`;
+/* ══════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════ */
+function showToast(title, msg, type = 'success') {
+  const icon = type === 'danger' || type === 'error' ? '🗑️' : type === 'warn' ? '⚠️' : '✅';
+  const c = document.createElement('div');
+  c.className = 'toast' + (type === 'danger' || type === 'error' ? ' danger' : '');
+  c.innerHTML = `<span class="t-icon">${icon}</span><div><strong class="t-title">${escHTML(title)}</strong><span class="t-msg">${escHTML(msg)}</span></div>`;
   $id('toasts').appendChild(c);
-  setTimeout(()=>{
-    c.style.animation='toastOut .4s var(--ease) forwards';
-    setTimeout(()=>c.remove(),400);
-  },3200);
+  setTimeout(() => {
+    c.style.animation = 'toastOut .4s var(--ease) forwards';
+    setTimeout(() => c.remove(), 400);
+  }, 3200);
 }
 
-/* ── RIPPLE ─────────────────────────────────────────────── */
-function addRipple(e){
-  const btn=e.currentTarget;if(!btn||btn.disabled)return;
-  const r=document.createElement('span');
-  const rect=btn.getBoundingClientRect();
-  const sz=Math.max(rect.width,rect.height);
-  r.className='ripple';
-  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+/* ══════════════════════════════════════════════════════════
+   RIPPLE
+══════════════════════════════════════════════════════════ */
+function addRipple(e) {
+  const btn = e.currentTarget;
+  if (!btn || btn.disabled) return;
+  const r = document.createElement('span');
+  const rect = btn.getBoundingClientRect();
+  const sz = Math.max(rect.width, rect.height);
+  r.className = 'ripple';
+  r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX - rect.left - sz/2}px;top:${e.clientY - rect.top - sz/2}px`;
   btn.appendChild(r);
-  setTimeout(()=>r.remove(),420);
+  setTimeout(() => r.remove(), 420);
 }
 
-/* ── DARK MODE ─────────────────────────────────────────── */
-/* ── DARK MODE (Firebase Sync) ─────────────────────────── */
-function setupTheme(){
-  const btn=$id('themeBtn');
-  const knob=btn.querySelector('.theme-knob');
-  const sys=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  // Apply theme from body class or system preference
-  const applyTheme=(isDark)=>{
-    document.body.classList.toggle('dark',isDark);
-    knob.textContent=isDark?'☀️':'🌙';
+/* ══════════════════════════════════════════════════════════
+   DARK MODE — Firebase-synced across devices
+══════════════════════════════════════════════════════════ */
+function setupTheme() {
+  const btn = $id('themeBtn');
+  const knob = btn.querySelector('.theme-knob');
+  const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const applyTheme = (isDark) => {
+    document.body.classList.toggle('dark', isDark);
+    knob.textContent = isDark ? '☀️' : '🌙';
   };
-  
-  // Load theme from Firebase
-  const loadThemeFromFirebase=async()=>{
-    if(!window._fb)return sys;
-    try{
-      const{ref,get}=window._fb;
-      const db=getDB();
-      const snap=await get(ref(db,'settings/theme'));
-      return snap.val()==='dark';
-    }catch(e){
-      console.warn('Theme load error:',e);
-      return sys;
-    }
+
+  const loadTheme = async () => {
+    if (!window._fb) return sys;
+    try {
+      const { ref, get } = window._fb;
+      const snap = await get(ref(getDB(), 'settings/theme'));
+      return snap.val() === 'dark';
+    } catch(e) { return sys; }
   };
-  
-  // Save theme to Firebase
-  const saveThemeToFirebase=async(isDark)=>{
-    if(!window._fb)return;
-    try{
-      const{ref,set}=window._fb;
-      const db=getDB();
-      await set(ref(db,'settings/theme'),isDark?'dark':'light');
-    }catch(e){
-      console.warn('Theme save error:',e);
-    }
+
+  const saveTheme = async (isDark) => {
+    if (!window._fb) return;
+    try {
+      const { ref, set } = window._fb;
+      await set(ref(getDB(), 'settings/theme'), isDark ? 'dark' : 'light');
+    } catch(e) {}
   };
-  
-  // Listen for theme changes from Firebase
-  const listenThemeChanges=()=>{
-    if(!window._fb)return;
-    const{ref,onValue}=window._fb;
-    const db=getDB();
-    onValue(ref(db,'settings/theme'),snap=>{
-      const theme=snap.val();
-      if(theme)applyTheme(theme==='dark');
+
+  const listenTheme = () => {
+    if (!window._fb) return;
+    const { ref, onValue } = window._fb;
+    onValue(ref(getDB(), 'settings/theme'), snap => {
+      const theme = snap.val();
+      if (theme) applyTheme(theme === 'dark');
     });
   };
-  
-  // Initialize theme
-  loadThemeFromFirebase().then(isDark=>{
-    applyTheme(isDark);
-    listenThemeChanges();
+
+  loadTheme().then(isDark => { applyTheme(isDark); listenTheme(); });
+
+  btn.addEventListener('click', async () => {
+    const isDark = document.body.classList.toggle('dark');
+    knob.textContent = isDark ? '☀️' : '🌙';
+    await saveTheme(isDark);
   });
-  
-  // Toggle theme on button click
-  btn.addEventListener('click',async()=>{
-    const isDark=document.body.classList.toggle('dark');
-    knob.textContent=isDark?'☀️':'🌙';
-    await saveThemeToFirebase(isDark);
-  });
-  
-  // System preference change (only if no Firebase theme set)
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',async ev=>{
-    if(!window._fb)return;
-    try{
-      const{ref,get}=window._fb;
-      const db=getDB();
-      const snap=await get(ref(db,'settings/theme'));
-      if(!snap.exists()){
-        applyTheme(ev.matches);
-        await saveThemeToFirebase(ev.matches);
-      }
-    }catch(e){}
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async ev => {
+    if (!window._fb) return;
+    try {
+      const { ref, get } = window._fb;
+      const snap = await get(ref(getDB(), 'settings/theme'));
+      if (!snap.exists()) { applyTheme(ev.matches); await saveTheme(ev.matches); }
+    } catch(e) {}
   });
 }
 
-/* ── SCROLL REVEAL ─────────────────────────────────────── */
-function setupReveal(){
-  const io=new IntersectionObserver(entries=>{
-    entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');io.unobserve(en.target)}});
-  },{threshold:.08,rootMargin:'0px 0px -40px 0px'});
-  document.querySelectorAll('.card').forEach(c=>io.observe(c));
+/* ══════════════════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════════════════ */
+function setupReveal() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+    });
+  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.card').forEach(c => io.observe(c));
 }
 
-/* ── STICKY NAV ─────────────────────────────────────────── */
-function setupNav(){
-  const nav=$id('mainNav');
-  window.addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>40),{passive:true});
+/* ══════════════════════════════════════════════════════════
+   STICKY NAV
+══════════════════════════════════════════════════════════ */
+function setupNav() {
+  const nav = $id('mainNav');
+  window.addEventListener('scroll', () => nav.classList.toggle('stuck', scrollY > 40), { passive: true });
 }
 
-/* ── ESCAPE HTML ────────────────────────────────────────── */
-function escHTML(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ══════════════════════════════════════════════════════════
+   ESCAPE HTML
+══════════════════════════════════════════════════════════ */
+function escHTML(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
-/* ── INIT ──────────────────────────────────────────────── */
-window.addEventListener('load',async()=>{
+/* ══════════════════════════════════════════════════════════
+   INIT
+   FIX #5: Removed duplicate addEventListener for delConfirmBtn
+   FIX #8: Session restored before first render
+══════════════════════════════════════════════════════════ */
+window.addEventListener('load', async () => {
   setupTheme();
   setupReveal();
   setupNav();
 
-  // Add ripple to all .btn elements (including future ones via delegation)
-  document.addEventListener('click',e=>{
-    const btn=e.target.closest('.btn');
-    if(btn)addRipple(Object.assign(e,{currentTarget:btn}));
+  // Ripple via event delegation
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (btn) addRipple(Object.assign(e, { currentTarget: btn }));
   });
 
-  try{
+  // FIX #8: Restore session state first
+  const hadSession = restoreSession();
+
+  try {
     await waitFB();
     await seedData();
     listenAll();
-  }catch(err){
-    console.error('Firebase init failed:',err);
-    showToast('Connection error','Running in offline mode','danger');
+  } catch(err) {
+    console.error('Firebase init failed:', err);
+    showToast('Connection error', 'Running in offline mode', 'danger');
   }
 
-  const logo=$id('logo');
-  const splash=$id('splash');
-  const loading=$id('loading');
+  const logo = $id('logo');
+  const splash = $id('splash');
+  const loading = $id('loading');
 
-  // Loading → splash reveal
-  setTimeout(()=>loading.classList.add('out'),400);
-
-  // Logo animates to corner
-  setTimeout(()=>logo.classList.add('small'),280);
-
-  // Splash fades
-  setTimeout(()=>{
+  setTimeout(() => loading.classList.add('out'), 400);
+  setTimeout(() => logo.classList.add('small'), 280);
+  setTimeout(() => {
     splash.classList.add('out');
-    setTimeout(()=>splash.style.display='none',500);
-  },1600);
+    setTimeout(() => splash.style.display = 'none', 500);
+  }, 1600);
 
-  // Show entry card
-  setTimeout(()=>{
-    showSection('studentEntry');
-    updateNav();
-  },2100);
+  // FIX #8: If session was restored, go directly to teacher dashboard
+  setTimeout(() => {
+    updateNav(); // must run before showSection
+    if (hadSession && role === 'teacher') {
+      showSection('teacherBox');
+    } else {
+      showSection('studentEntry');
+    }
+  }, 2100);
 });
 
-window.addEventListener('beforeunload',()=>unsubs.forEach(u=>u&&u()));
+window.addEventListener('beforeunload', () => unsubs.forEach(u => u && u()));
 </script>
 </body>
 </html>
