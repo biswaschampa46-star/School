@@ -532,6 +532,7 @@ img{max-width:100%;height:auto;display:block}
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import{getAnalytics}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
 import{getDatabase,ref,push,set,remove,onValue,get}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+import{getStorage,ref as storageRef,uploadBytes,getDownloadURL}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 const cfg={
   apiKey:"AIzaSyCdXFMoMkZSfPZkMtJDDFj3TjRQ4GCISjM",
   authDomain:"mccs-7f895.firebaseapp.com",
@@ -545,7 +546,8 @@ const cfg={
 const app=initializeApp(cfg);
 try{getAnalytics(app)}catch(e){}
 const db=getDatabase(app);
-window._fb={db,ref,push,set,remove,onValue,get};
+const storage=getStorage(app);
+window._fb={db,ref,push,set,remove,onValue,get,storage,storageRef,uploadBytes,getDownloadURL};
 window.dispatchEvent(new Event("fb-ready"));
 </script>
 </head>
@@ -792,18 +794,21 @@ function listenAll(){
     notices=[];const v=s.val();
     if(v)Object.entries(v).forEach(([k,d])=>notices.push({id:k,...d}));
     notices.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    console.log('Notices loaded:',notices.length);
     renderStudent();renderTeacher();
   }));
   unsubs.push(onValue(ref(db,'routines'),s=>{
     routines=[];const v=s.val();
     if(v)Object.entries(v).forEach(([k,d])=>routines.push({id:k,...d}));
     routines.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    console.log('Routines loaded:',routines.length);
     renderStudent();renderTeacher();
   }));
   unsubs.push(onValue(ref(db,'pictures'),s=>{
     pictures=[];const v=s.val();
     if(v)Object.entries(v).forEach(([k,d])=>pictures.push({id:k,...d}));
     pictures.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    console.log('Pictures loaded:',pictures.length);
     renderTeacher();
   }));
 }
@@ -918,11 +923,38 @@ async function execDelete(){
     const{ref,remove}=window._fb;
     const db=getDB();
     const map={notice:'notices',routine:'routines',picture:'pictures'};
+    console.log('Deleting from Firebase:',pendType,pendId);
+    
+    // If deleting a picture, also delete from Storage
+    if(pendType==='picture'){
+      const pic=pictures.find(p=>p.id===pendId);
+      if(pic&&pic.imageUrl){
+        try{
+          const{storage,storageRef}=window._fb;
+          const{deleteObject}=await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js');
+          // Extract path from URL
+          const urlPath=pic.imageUrl.split('/o/')[1]?.split('?')[0];
+          if(urlPath){
+            const decodedPath=decodeURIComponent(urlPath);
+            const imgRef=storageRef(storage,decodedPath);
+            await deleteObject(imgRef);
+            console.log('Image deleted from Storage:',decodedPath);
+          }
+        }catch(storageErr){
+          console.warn('Failed to delete image from Storage:',storageErr);
+        }
+      }
+    }
+    
     await remove(ref(db,`${map[pendType]}/${pendId}`));
+    console.log('Successfully deleted from database');
     const labels={notice:'Notice',routine:'Routine',picture:'Picture'};
     showToast('Deleted',`${labels[pendType]} removed successfully`,'danger');
     closeDeleteModal();
-  }catch(e){showToast('Error','Failed to delete: '+e.message,'danger')}
+  }catch(e){
+    console.error('Delete failed:',e);
+    showToast('Error','Failed to delete: '+e.message,'danger');
+  }
 }
 
 $id('delConfirmBtn').addEventListener('click',execDelete);
@@ -951,7 +983,7 @@ function renderNoticeModal(){
   });
   pictures.forEach(p=>{
     html+=`<div class="notice-img-item">
-      <img src="${p.imageData}" alt="${p.caption?escHTML(p.caption):'Notice Image'}" loading="lazy">
+      <img src="${p.imageUrl||p.imageData}" alt="${p.caption?escHTML(p.caption):'Notice Image'}" loading="lazy">
       ${p.caption?`<div class="img-cap">📷 ${escHTML(p.caption)}</div>`:''}
       <div style="padding:8px 12px;font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</div>
     </div>`;
@@ -980,10 +1012,16 @@ async function addNotice(){
   try{
     const{ref,push,set}=window._fb;
     const db=getDB();
-    await set(push(ref(db,'notices')),{text,timestamp:Date.now()});
+    console.log('Adding notice to Firebase...',{text,timestamp:Date.now()});
+    const noticeRef=push(ref(db,'notices'));
+    await set(noticeRef,{text,timestamp:Date.now()});
+    console.log('Notice added successfully with key:',noticeRef.key);
     inp.value='';
     showToast('Published','Notice added successfully','success');
-  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+  }catch(e){
+    console.error('Failed to add notice:',e);
+    showToast('Error','Failed: '+e.message,'danger');
+  }
 }
 
 /* ── ADD PICTURE ───────────────────────────────────────── */
@@ -992,15 +1030,42 @@ async function addPicture(){
   if(!fbReady){showToast('Error','Firebase not ready','danger');return}
   const cap=$id('picCaption').value.trim();
   try{
-    const{ref,push,set}=window._fb;
+    const{ref,push,set,storage,storageRef,uploadBytes,getDownloadURL}=window._fb;
     const db=getDB();
-    await set(push(ref(db,'pictures')),{imageData:selImg,caption:cap,timestamp:Date.now()});
+    
+    // Convert base64 to blob
+    const base64Data=selImg.split(',')[1];
+    const mimeType=selImg.split(',')[0].match(/:(.*?);/)[1];
+    const byteCharacters=atob(base64Data);
+    const byteNumbers=new Array(byteCharacters.length);
+    for(let i=0;i<byteCharacters.length;i++){
+      byteNumbers[i]=byteCharacters.charCodeAt(i);
+    }
+    const byteArray=new Uint8Array(byteNumbers);
+    const blob=new Blob([byteArray],{type:mimeType});
+    
+    // Upload to Firebase Storage
+    const timestamp=Date.now();
+    const fileName=`pictures/${timestamp}_${Math.random().toString(36).substr(2,9)}.jpg`;
+    console.log('Uploading image to Firebase Storage...',fileName);
+    const imgRef=storageRef(storage,fileName);
+    await uploadBytes(imgRef,blob);
+    const imageUrl=await getDownloadURL(imgRef);
+    console.log('Image uploaded successfully:',imageUrl);
+    
+    // Save metadata to Realtime Database
+    await set(push(ref(db,'pictures')),{imageUrl,caption:cap,timestamp});
+    console.log('Picture metadata saved to database');
+    
     selImg=null;
     $id('imgPreview').style.display='none';$id('imgPreview').src='';
     $id('uploadZone').style.display='block';
     $id('picCaption').value='';$id('picInput').value='';
     showToast('Published','Picture added successfully','success');
-  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+  }catch(e){
+    console.error('Failed to add picture:',e);
+    showToast('Error','Failed: '+e.message,'danger');
+  }
 }
 
 /* ── ADD ROUTINE ───────────────────────────────────────── */
@@ -1011,10 +1076,16 @@ async function addRoutine(){
   try{
     const{ref,push,set}=window._fb;
     const db=getDB();
-    await set(push(ref(db,'routines')),{text,timestamp:Date.now()});
+    console.log('Adding routine to Firebase...',{text,timestamp:Date.now()});
+    const routineRef=push(ref(db,'routines'));
+    await set(routineRef,{text,timestamp:Date.now()});
+    console.log('Routine added successfully with key:',routineRef.key);
     inp.value='';
     showToast('Added','Routine updated','success');
-  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+  }catch(e){
+    console.error('Failed to add routine:',e);
+    showToast('Error','Failed: '+e.message,'danger');
+  }
 }
 
 /* ── RENDER STUDENT ────────────────────────────────────── */
@@ -1047,7 +1118,7 @@ function renderTeacher(){
 
   if(pe)pe.innerHTML=pictures.length
     ?pictures.map(p=>`<li style="flex-direction:column;align-items:flex-start;gap:8px">
-      <img src="${p.imageData}" style="width:100%;max-height:150px;object-fit:contain;border-radius:10px;background:var(--surface-solid)" loading="lazy">
+      <img src="${p.imageUrl||p.imageData}" style="width:100%;max-height:150px;object-fit:contain;border-radius:10px;background:var(--surface-solid)" loading="lazy">
       ${p.caption?`<span style="font-size:12.5px;color:var(--sub)">📷 ${escHTML(p.caption)}</span>`:''}
       <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</span>
       <button class="btn btn-del" data-type="picture" data-id="${p.id}">Delete</button>
