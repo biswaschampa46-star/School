@@ -1007,11 +1007,19 @@ document.head.appendChild(shakeKF);
    FIX #2: deleteObject now comes from window._fb directly
 ══════════════════════════════════════════════════════════ */
 function openDeleteModal(type, id) {
+  console.log('=== OPENING DELETE MODAL ===');
+  console.log('Type:', type);
+  console.log('ID:', id);
+  
   let txt = '', title = 'Delete Item';
   if (type === 'notice') { const n = notices.find(x => x.id === id); txt = n ? n.text : ''; title = 'Delete Notice'; }
   else if (type === 'routine') { const r = routines.find(x => x.id === id); txt = r ? r.text : ''; title = 'Delete Routine'; }
   else if (type === 'picture') { txt = 'This picture will be permanently deleted.'; title = 'Delete Picture'; }
   pendId = id; pendType = type;
+  
+  console.log('Set pendId:', pendId);
+  console.log('Set pendType:', pendType);
+  
   $id('delPreview').textContent = txt;
   $id('delTitle').textContent = title;
   $id('deleteOverlay').classList.add('show');
@@ -1019,14 +1027,27 @@ function openDeleteModal(type, id) {
 }
 
 function closeDeleteModal() {
+  console.log('=== CLOSING DELETE MODAL ===');
   $id('deleteOverlay').classList.remove('show');
   $id('deleteModal').classList.remove('show');
   pendId = null; pendType = null;
+  console.log('Reset pendId and pendType to null');
 }
 
 async function execDelete() {
-  if (!pendId || !pendType) return;
-  if (!fbReady) { showToast('Error', 'Firebase not ready', 'danger'); return; }
+  console.log('=== DELETE STARTED ===');
+  console.log('pendId:', pendId);
+  console.log('pendType:', pendType);
+  
+  if (!pendId || !pendType) {
+    console.error('Missing pendId or pendType');
+    return;
+  }
+  if (!fbReady) { 
+    console.error('Firebase not ready');
+    showToast('Error', 'Firebase not ready', 'danger'); 
+    return; 
+  }
 
   const btn = $id('delConfirmBtn');
   btn.textContent = 'Deleting…';
@@ -1036,20 +1057,27 @@ async function execDelete() {
     // FIX #2: deleteObject comes from window._fb — no dynamic import needed
     const { ref, remove, storage, storageRef, deleteObject } = window._fb;
     const db = getDB();
+    console.log('Database instance:', db);
+    console.log('Storage instance:', storage);
+    
     const map = { notice: 'notices', routine: 'routines', picture: 'pictures' };
+    const dbPath = `${map[pendType]}/${pendId}`;
+    console.log('Database path to delete:', dbPath);
 
     // Delete image from Storage first (if applicable)
     if (pendType === 'picture') {
       const pic = pictures.find(p => p.id === pendId);
+      console.log('Picture to delete:', pic);
       if (pic && pic.imageUrl) {
         try {
           // Extract storage path from download URL
           const urlPath = pic.imageUrl.split('/o/')[1]?.split('?')[0];
           if (urlPath) {
             const decodedPath = decodeURIComponent(urlPath);
+            console.log('Deleting from Storage path:', decodedPath);
             const imgRef = storageRef(storage, decodedPath);
             await deleteObject(imgRef);
-            console.log('Image deleted from Storage:', decodedPath);
+            console.log('✓ Image deleted from Storage');
           }
         } catch(storageErr) {
           // Storage delete failure is non-fatal — DB record can still be removed
@@ -1059,12 +1087,20 @@ async function execDelete() {
     }
 
     // Remove database record
-    await remove(ref(db, `${map[pendType]}/${pendId}`));
+    console.log('Attempting to remove from database...');
+    const dbRef = ref(db, dbPath);
+    console.log('Database reference:', dbRef);
+    await remove(dbRef);
+    console.log('✓ Successfully removed from database');
+    
     const labels = { notice: 'Notice', routine: 'Routine', picture: 'Picture' };
     showToast('Deleted', `${labels[pendType]} removed successfully`, 'danger');
     closeDeleteModal();
   } catch(e) {
-    console.error('Delete failed:', e);
+    console.error('=== DELETE FAILED ===');
+    console.error('Error:', e);
+    console.error('Error message:', e.message);
+    console.error('Error code:', e.code);
     showToast('Error', 'Failed to delete: ' + e.message, 'danger');
   } finally {
     btn.textContent = 'Delete';
@@ -1297,7 +1333,13 @@ function renderTeacher() {
 // Event delegation for delete buttons
 document.addEventListener('click', e => {
   const btn = e.target.closest('.btn-del');
-  if (btn && btn.dataset.type && btn.dataset.id) openDeleteModal(btn.dataset.type, btn.dataset.id);
+  if (btn && btn.dataset.type && btn.dataset.id) {
+    console.log('=== DELETE BUTTON CLICKED ===');
+    console.log('Button:', btn);
+    console.log('Dataset type:', btn.dataset.type);
+    console.log('Dataset id:', btn.dataset.id);
+    openDeleteModal(btn.dataset.type, btn.dataset.id);
+  }
 });
 
 /* ══════════════════════════════════════════════════════════
@@ -1437,6 +1479,17 @@ window.addEventListener('load', async () => {
   setupTheme();
   setupReveal();
   setupNav();
+
+  // Setup delete button event listener
+  console.log('=== SETTING UP DELETE BUTTON ===');
+  const delBtn = $id('delConfirmBtn');
+  console.log('Delete button element:', delBtn);
+  if (delBtn) {
+    delBtn.addEventListener('click', execDelete);
+    console.log('✓ Delete button event listener added');
+  } else {
+    console.error('❌ Delete button not found!');
+  }
 
   // Ripple via event delegation
   document.addEventListener('click', e => {
