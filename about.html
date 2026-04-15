@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Student Result Portal — Demo School</title>
+    <link rel="icon" type="image/png" href="113.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── RESET ─────────────────────────────────────────────── */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ── TOKENS ─────────────────────────────────────────────── */
+        :root {
+            --green:    #006B3F;
+            --green2:   #00a85a;
+            --green3:   #00c16e;
+            --red:      #C8102E;
+            --surface:  rgba(255, 255, 255, 0.72);
+            --border:   rgba(0, 107, 63, 0.14);
+            --text:     #0f1f14;
+            --muted:    #6b7280;
+            --radius:   24px;
+            --shadow:   0 24px 64px rgba(0, 107, 63, 0.13), 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 40px 100px rgba(0, 107, 63, 0.2), 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── DARK MODE TOKENS ───────────────────────────────────── */
+        body.dark {
+            --surface:  rgba(30, 41, 59, 0.72);
+            --border:   rgba(148, 163, 184, 0.14);
+            --text:     #f1f5f9;
+            --muted:    #94a3b8;
+            --shadow:   0 24px 64px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 40px 100px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark {
+            background: #0f172a;
+            color: var(--text);
+        }
+
+        body.dark::before {
+            background:
+                radial-gradient(ellipse 70% 55% at 15% 10%, rgba(0, 193, 110, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 55% 70% at 85% 85%, rgba(0, 171, 85, 0.08) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, #0f172a 55%, #1e293b 100%);
+        }
+
+        body.dark::after {
+            background:
+                radial-gradient(circle at 22% 18%, rgba(34, 197, 94, 0.1) 0%, transparent 22%),
+                radial-gradient(circle at 76% 35%, rgba(34, 197, 94, 0.08) 0%, transparent 18%),
+                radial-gradient(circle at 50% 85%, rgba(255, 255, 255, 0.05) 0%, transparent 28%);
+            opacity: 0.7;
+        }
+
+        /* ── BODY & MESH BACKGROUND ─────────────────────────────── */
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            background: #f0fdf4;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
+            padding: 32px 16px 64px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse 70% 55% at 15% 10%, rgba(0, 193, 110, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 55% 70% at 85% 85%, rgba(0, 171, 85, 0.14) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 100% at 50% 50%, #f0fdf4 55%, #d1fae5 100%);
+            animation: meshDrift 20s ease-in-out infinite alternate;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            background:
+                radial-gradient(circle at 22% 18%, rgba(34, 197, 94, 0.18) 0%, transparent 22%),
+                radial-gradient(circle at 76% 35%, rgba(34, 197, 94, 0.12) 0%, transparent 18%),
+                radial-gradient(circle at 50% 85%, rgba(255, 255, 255, 0.22) 0%, transparent 28%);
+            pointer-events: none;
+            opacity: 0.95;
+            filter: blur(2px);
+            animation: bloomPulse 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshDrift {
+            from { opacity: 1; }
+            to   { opacity: 0.82; }
+        }
+
+        @keyframes bloomPulse {
+            from { transform: scale(1); opacity: 0.95; }
+            to   { transform: scale(1.02); opacity: 1; }
+        }
+
+        /* ── PARTICLE CANVAS ────────────────────────────────────── */
+        #particleCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ── LAYOUT ─────────────────────────────────────────────── */
+        .page-wrap {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ── HEADER ────────────────────────────────────────────── */
+        .site-header {
+            border-radius: var(--radius) var(--radius) 0 0;
+            background: linear-gradient(135deg, #064e3b 0%, #006B3F 50%, #047857 100%);
+            padding: 28px 36px 24px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-20px);
+            filter: blur(6px);
+            animation: headerIn 0.75s 0.1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .site-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300c16e' fill-opacity='0.07'%3E%3Cpath d='M26 0l4 8h-8zM0 26l8-4v8zM52 26l-8 4v-8zM26 52l-4-8h8z'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .site-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--red), #e53e3e, var(--red), transparent);
+        }
+
+        @keyframes headerIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .header-school {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.4rem, 4vw, 1.9rem);
+            color: #fff;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-sub {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(167, 243, 208, 0.85);
+            margin-top: 6px;
+        }
+
+        /* ── MAIN CARD ──────────────────────────────────────────── */
+        .main-card {
+            position: relative;
+            overflow: visible;
+            background: var(--surface);
+            backdrop-filter: blur(40px) saturate(1.5);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 36px 36px;
+            transition: box-shadow 0.4s ease, transform 0.4s ease;
+            animation: cardBloom 14s ease-in-out infinite alternate;
+        }
+
+        .main-card::before,
+        .main-card::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(24px);
+        }
+
+        .main-card::before {
+            width: 220px;
+            height: 220px;
+            top: -40px;
+            right: -52px;
+            background: radial-gradient(circle, rgba(0, 193, 110, 0.2) 0%, transparent 55%);
+        }
+
+        .main-card::after {
+            width: 180px;
+            height: 180px;
+            bottom: -50px;
+            left: -40px;
+            background: radial-gradient(circle, rgba(0, 255, 156, 0.14) 0%, transparent 60%);
+        }
+
+        .main-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+        }
+
+        /* ── CARD TITLE ─────────────────────────────────────────── */
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.65rem;
+            color: var(--green);
+            text-align: center;
+            margin-bottom: 32px;
+            letter-spacing: -0.01em;
+        }
+
+        /* ── FORM FIELDS ────────────────────────────────────────── */
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--green);
+            margin-bottom: 7px;
+            padding-left: 2px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 13px 18px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid rgba(0, 107, 63, 0.18);
+            border-radius: 14px;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+
+        body.dark .field input {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(148, 163, 184, 0.2);
+            color: var(--text);
+        }
+
+        .field input:focus {
+            border-color: var(--green2);
+            box-shadow: 0 0 0 4px rgba(0, 171, 85, 0.14);
+            background: #fff;
+        }
+
+        body.dark .field input:focus {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: var(--green2);
+        }
+
+        .field input::placeholder {
+            color: #9ca3af;
+        }
+
+        body.dark .field input::placeholder {
+            color: #64748b;
+        }
+
+        /* ── CUSTOM DROPDOWN ────────────────────────────────────── */
+        .custom-select {
+            position: relative;
+            user-select: none;
+        }
+
+        .cs-trigger {
+            width: 100%;
+            min-height: 52px;
+            padding: 14px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+        }
+
+        .cs-trigger:hover {
+            border-color: rgba(0, 171, 85, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 171, 85, 0.08), 0 4px 16px rgba(0, 107, 63, 0.1);
+        }
+
+        .cs-trigger.active {
+            border-color: var(--green2);
+            box-shadow: 0 0 0 4px rgba(0, 171, 85, 0.12), 0 8px 24px rgba(0, 107, 63, 0.12);
+            background: var(--surface);
+        }
+
+        .cs-label {
+            flex: 1;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .cs-arrow {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .cs-arrow svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--green);
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .cs-trigger.active .cs-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Portal */
+        .cs-portal {
+            position: fixed;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .cs-portal.active {
+            pointer-events: auto;
+        }
+
+        .cs-dropdown {
+            position: absolute;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 0;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px) saturate(1.1);
+            min-width: 200px;
+            max-height: 280px;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.96);
+            transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: opacity, transform;
+        }
+
+        .cs-dropdown.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .cs-dropdown::-webkit-scrollbar { width: 6px; }
+        .cs-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .cs-dropdown::-webkit-scrollbar-thumb { background: rgba(0, 107, 63, 0.18); border-radius: 999px; }
+        .cs-dropdown::-webkit-scrollbar-thumb:hover { background: rgba(0, 107, 63, 0.28); }
+        .cs-dropdown { scrollbar-width: thin; scrollbar-color: rgba(0, 107, 63, 0.18) transparent; }
+
+        /* Dark mode scrollbar */
+        body.dark .cs-dropdown::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); }
+        body.dark .cs-dropdown::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
+        body.dark .cs-dropdown { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.3) transparent; }
+
+        .cs-option {
+            padding: 14px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .cs-option:last-child { border-bottom: none; }
+        .cs-option:hover { background: rgba(0, 171, 85, 0.08); color: var(--green); }
+        .cs-option.selected { background: rgba(0, 171, 85, 0.12); color: var(--green); font-weight: 600; }
+
+        .cs-check {
+            font-size: 14px;
+            color: var(--green2);
+            opacity: 0;
+            transform: scale(0.8) rotate(-90deg);
+            transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .cs-option.selected .cs-check {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* ── SUBMIT BUTTON ──────────────────────────────────────── */
+        .submit-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 15px 28px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: #fff;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #064e3b 0%, var(--green) 45%, var(--green2) 100%);
+            background-size: 220% 220%;
+            box-shadow:
+                0 0 0 1px rgba(0, 171, 85, 0.3),
+                0 6px 22px rgba(0, 107, 63, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+            animation: btnPulse 3s ease-in-out infinite, btnGlow 5s ease-in-out infinite;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            pointer-events: none;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, 0.22) 45%, rgba(255, 255, 255, 0.06) 55%, transparent 75%);
+            transform: translateX(-130%);
+            transition: transform 0.7s ease;
+            pointer-events: none;
+        }
+
+        .submit-btn:hover::after { transform: translateX(130%); }
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow:
+                0 0 0 1px rgba(0, 171, 85, 0.4),
+                0 0 22px rgba(0, 171, 85, 0.45),
+                0 16px 40px rgba(0, 107, 63, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.32);
+        }
+        .submit-btn:active { transform: scale(0.97) translateY(1px); }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 0 0 1px rgba(0, 171, 85, 0.3), 0 6px 22px rgba(0, 107, 63, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.28); }
+            50% { box-shadow: 0 0 0 1px rgba(0, 171, 85, 0.5), 0 6px 32px rgba(0, 107, 63, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.28); }
+        }
+
+        @keyframes btnGlow {
+            0%, 100% { background-position: 20% 50%; }
+            50%      { background-position: 80% 50%; }
+        }
+
+        @keyframes cardBloom {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-3px); }
+        }
+
+        /* ── DIVIDER ────────────────────────────────────────────── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 107, 63, 0.2), transparent);
+            margin: 32px 0;
+        }
+
+        /* ── RESULT BOX ─────────────────────────────────────────── */
+        .result-box {
+            position: relative;
+            border-radius: 28px;
+            padding: 32px;
+            border: 1.5px solid transparent;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(18px) saturate(1.2);
+            box-shadow: 0 28px 70px rgba(0, 107, 63, 0.14);
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+            filter: blur(6px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: boxBloom 12s ease-in-out infinite alternate;
+        }
+
+        body.dark .result-box {
+            background: rgba(30, 41, 59, 0.82);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-box.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            left: 20px; top: -30px;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(0, 193, 110, 0.16) 0%, transparent 62%);
+            filter: blur(26px);
+            pointer-events: none;
+        }
+
+        .result-box::after {
+            content: '';
+            position: absolute;
+            right: 20px; bottom: -32px;
+            width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, transparent 58%);
+            filter: blur(24px);
+            pointer-events: none;
+        }
+
+        /* GPA Ring */
+        .gpa-ring-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 24px 0 28px;
+        }
+
+        .gpa-ring {
+            position: relative;
+            width: 110px;
+            height: 110px;
+        }
+
+        .gpa-ring svg {
+            transform: rotate(-90deg);
+            width: 110px;
+            height: 110px;
+        }
+
+        .gpa-ring .track {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.07);
+            stroke-width: 8;
+        }
+
+        .gpa-ring .fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.3s;
+        }
+
+        .gpa-val {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .gpa-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-top: 3px;
+        }
+
+        /* Result Rows */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.4s ease;
+        }
+
+        .result-row:last-child { border-bottom: none; }
+
+        .result-row.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .result-row .rk { font-weight: 600; color: var(--muted); }
+        .result-row .rv { font-weight: 700; color: var(--text); }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        /* Result Message */
+        .result-msg {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 14px 20px;
+            border-radius: 14px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.5s ease 0.8s;
+        }
+        .result-msg.show { opacity: 1; transform: translateY(0); }
+
+        /* View Details Button */
+        .view-details-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.45s ease 1.15s, transform 0.45s ease 1.15s;
+        }
+        .view-details-wrap.show { opacity: 1; transform: translateY(0); }
+
+        .view-details-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 26px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: var(--green);
+            background: rgba(0,107,63,0.07);
+            border: 1.5px solid rgba(0,107,63,0.22);
+            border-radius: 9999px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+            text-decoration: none;
+        }
+        .view-details-btn svg {
+            width: 15px; height: 15px;
+            stroke: currentColor; fill: none;
+            stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+            transition: transform 0.3s cubic-bezier(0.23,1,0.32,1);
+        }
+        .view-details-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 30%, rgba(0,171,85,0.12) 50%, transparent 70%);
+            transform: translateX(-120%);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+        .view-details-btn:hover {
+            background: rgba(0,107,63,0.12);
+            border-color: var(--green2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(0,171,85,0.12), 0 8px 24px rgba(0,107,63,0.18);
+        }
+        .view-details-btn:hover svg { transform: translateX(4px); }
+        .view-details-btn:hover::before { transform: translateX(120%); }
+        .view-details-btn:active { transform: scale(0.96); }
+
+        /* ── FOOTER ─────────────────────────────────────────────── */
+        .site-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* ── REVEAL ANIMATIONS ──────────────────────────────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            filter: blur(7px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: opacity, transform, filter;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        .rd1 { transition-delay: 0.08s; }
+        .rd2 { transition-delay: 0.16s; }
+        .rd3 { transition-delay: 0.24s; }
+        .rd4 { transition-delay: 0.32s; }
+        .rd5 { transition-delay: 0.40s; }
+        .rd6 { transition-delay: 0.48s; }
+        .rd7 { transition-delay: 0.56s; }
+
+        /* ── LOADING SPINNER ────────────────────────────────────── */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── RESPONSIVE ─────────────────────────────────────────── */
+        @media (max-width: 480px) {
+            .main-card { padding: 28px 20px 24px; }
+            .site-header { padding: 22px 24px 20px; }
+            .cs-trigger { min-height: 48px; padding: 12px 16px; font-size: 13px; }
+            .cs-dropdown { max-height: 220px; max-width: calc(100vw - 32px); }
+            .cs-option { padding: 12px 16px; font-size: 13px; }
+        }
+
+        @media (max-width: 768px) {
+            body::before {
+                background:
+                    radial-gradient(ellipse 70% 55% at 15% 10%, rgba(0, 193, 110, 0.12) 0%, transparent 60%),
+                    radial-gradient(ellipse 55% 70% at 85% 85%, rgba(0, 171, 85, 0.08) 0%, transparent 55%),
+                    #f0fdf4;
+                animation: none;
+            }
+            body::after { opacity: 0.7; filter: blur(1px); animation: none; }
+            #particleCanvas { opacity: 0.6; }
+            .main-card {
+                box-shadow: 0 12px 32px rgba(0, 107, 63, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+                backdrop-filter: blur(20px) saturate(1.2);
+            }
+            .main-card::before, .main-card::after { filter: blur(12px); opacity: 0.7; }
+            .result-box { box-shadow: 0 14px 35px rgba(0, 107, 63, 0.08); backdrop-filter: blur(12px) saturate(1.1); }
+            .result-box::before, .result-box::after { filter: blur(12px); opacity: 0.6; }
+            .submit-btn {
+                box-shadow: 0 0 0 1px rgba(0, 171, 85, 0.2), 0 4px 16px rgba(0, 107, 63, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                animation: none;
+            }
+            .submit-btn:hover {
+                box-shadow: 0 0 0 1px rgba(0, 171, 85, 0.3), 0 8px 24px rgba(0, 107, 63, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            }
+            .reveal { filter: blur(3px); }
+            .reveal.visible { filter: blur(0); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 20px 12px 48px; }
+            .page-wrap { max-width: 100%; }
+            .main-card { padding: 24px 16px 20px; border-radius: 0 0 20px 20px; }
+            .site-header { padding: 18px 20px 16px; border-radius: 20px 20px 0 0; }
+            .header-school { font-size: 1.3rem; }
+            .card-title { font-size: 1.4rem; margin-bottom: 24px; }
+            .field { margin-bottom: 16px; }
+            .field input { padding: 12px 16px; font-size: 16px; border-radius: 12px; }
+            .cs-trigger { min-height: 52px; padding: 14px 18px; font-size: 16px; border-radius: 18px; }
+            .cs-dropdown { border-radius: 16px; max-height: 200px; max-width: calc(100vw - 24px); }
+            .cs-option { padding: 14px 18px; font-size: 15px; }
+            .submit-btn { padding: 16px 24px; font-size: 16px; }
+            .result-box { padding: 24px 16px; border-radius: 20px; }
+            .gpa-ring { width: 90px; height: 90px; }
+            .gpa-ring svg { width: 90px; height: 90px; }
+            .gpa-val { font-size: 1.4rem; }
+            .result-row { font-size: 13px; padding: 10px 0; }
+            .view-details-btn { padding: 12px 22px; font-size: 15px; }
+            .cs-portal { z-index: 9999; }
+            .cs-trigger, .submit-btn, .view-details-btn { min-height: 44px; touch-action: manipulation; }
+            .cs-option { min-height: 44px; touch-action: manipulation; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            .reveal { opacity: 1; transform: none; filter: none; }
+            .site-header { opacity: 1; transform: none; filter: none; }
+            #particleCanvas { display: none; }
+        }
+
+        @media (max-width: 768px) and (max-resolution: 150dpi) {
+            body::before, body::after { display: none; }
+            #particleCanvas { display: none; }
+            .main-card, .result-box { backdrop-filter: none; background: rgba(255, 255, 255, 0.95); }
+            .cs-dropdown { backdrop-filter: none; background: rgba(255, 255, 255, 0.98); }
+            * { will-change: auto !important; }
+        }
+
+        /* ── MODAL POPUP SYSTEM ─────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            position: relative;
+            max-width: 440px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(24px) saturate(1.3);
+            border: 1px solid rgba(0, 107, 63, 0.15);
+            border-radius: 20px;
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+                0 0 60px rgba(0, 171, 85, 0.15);
+            padding: 32px;
+            transform: scale(0.8);
+            opacity: 0;
+            filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body.dark .modal-container {
+            background: rgba(30, 41, 59, 0.98);
+            border-color: rgba(148, 163, 184, 0.2);
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(148, 163, 184, 0.2) inset,
+                0 0 60px rgba(0, 171, 85, 0.1);
+        }
+
+        .modal-overlay.show .modal-container {
+            transform: scale(1);
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 32px;
+            animation: iconPop 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.2s backwards;
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .modal-icon.success {
+            background: linear-gradient(135deg, rgba(0, 171, 85, 0.15), rgba(0, 193, 110, 0.1));
+            color: var(--green2);
+            box-shadow: 0 0 0 3px rgba(0, 171, 85, 0.1);
+        }
+
+        .modal-icon.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+            color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .modal-icon.warning {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+            color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .modal-icon.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
+            color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .modal-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .modal-message {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 100px;
+        }
+
+        .modal-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            transform: translateX(-120%);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+
+        .modal-btn:hover::before {
+            transform: translateX(120%);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #064e3b 0%, var(--green) 45%, var(--green2) 100%);
+            color: #fff;
+            box-shadow: 
+                0 0 0 1px rgba(0, 171, 85, 0.3),
+                0 6px 22px rgba(0, 107, 63, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 0 1px rgba(0, 171, 85, 0.4),
+                0 0 22px rgba(0, 171, 85, 0.4),
+                0 12px 32px rgba(0, 107, 63, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            border: 1.5px solid rgba(0, 107, 63, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-btn.secondary:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--green2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(0, 171, 85, 0.1), 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .modal-btn.danger {
+            background: linear-gradient(135deg, #b91c1c 0%, #dc2626 45%, #ef4444 100%);
+            color: #fff;
+            box-shadow: 
+                0 0 0 1px rgba(239, 68, 68, 0.3),
+                0 6px 22px rgba(185, 28, 28, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .modal-btn.danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 0 1px rgba(239, 68, 68, 0.4),
+                0 0 22px rgba(239, 68, 68, 0.4),
+                0 12px 32px rgba(185, 28, 28, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 480px) {
+            .modal-container {
+                padding: 24px;
+                border-radius: 16px;
+            }
+
+            .modal-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 28px;
+            }
+
+            .modal-title {
+                font-size: 1.3rem;
+            }
+
+            .modal-message {
+                font-size: 14px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-btn {
+                width: 100%;
+                min-height: 44px;
+            }
+        }
+    </style>
+<!-- ── FIREBASE REALTIME DATABASE SDK ──────────────────── -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+  import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCdXFMoMkZSfPZkMtJDDFj3TjRQ4GCISjM",
+    authDomain: "mccs-7f895.firebaseapp.com",
+    databaseURL: "https://mccs-7f895-default-rtdb.firebaseio.com",
+    projectId: "mccs-7f895",
+    storageBucket: "mccs-7f895.firebasestorage.app",
+    messagingSenderId: "148357261534",
+    appId: "1:148357261534:web:b2db753d261586cbb07a4f",
+    measurementId: "G-JCSJZM9CXP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const rtdb = getDatabase(app);
+  window._firebase = { app, db: rtdb, ref, onValue, get };
+  window.dispatchEvent(new Event("firebase-ready"));
+</script>
+</head>
+<body>
+
+    <!-- MODAL POPUP -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-container">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <p id="modalMessage" class="modal-message"></p>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="page-wrap">
+
+        <!-- HEADER -->
+        <div class="site-header">
+            <div class="header-school">🏫 Magura Collectorate Collegiate School, Magura</div>
+            <div class="header-sub">Official Examination Result Portal — Cloud Synced</div>
+        </div>
+
+        <!-- MAIN CARD -->
+        <div class="main-card">
+
+            <h2 class="card-title reveal rd1">Student Result Portal</h2>
+
+            <!-- FORM -->
+            <div class="field reveal rd2">
+                <label>Exam Type</label>
+                <div class="custom-select" id="csExamType">
+                    <div class="cs-trigger">
+                        <span class="cs-label">Half Yearly</span>
+                        <span class="cs-arrow">
+                            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
+                    <div class="cs-dropdown">
+                        <div class="cs-option selected" data-value="Half Yearly">Half Yearly<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="Yearly">Yearly<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="Pre Test">Pre Test<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="Unit Test">Unit Test<span class="cs-check">✓</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field reveal rd3">
+                <label>Class</label>
+                <div class="custom-select" id="csClass">
+                    <div class="cs-trigger">
+                        <span class="cs-label">Class 6</span>
+                        <span class="cs-arrow">
+                            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
+                    <div class="cs-dropdown">
+                        <div class="cs-option selected" data-value="Class 6">Class 6<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="Class 7">Class 7<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="Class 8">Class 8<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="SSC Batch 2027">SSC Batch 2027<span class="cs-check">✓</span></div>
+                        <div class="cs-option" data-value="SSC Batch 2028">SSC Batch 2028<span class="cs-check">✓</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field reveal rd4">
+                <label>Roll Number</label>
+                <input type="number" id="roll" placeholder="Enter your roll number">
+            </div>
+
+            <div class="field reveal rd5">
+                <label>Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter full name">
+            </div>
+
+            <div class="field reveal rd6">
+                <label>Class Teacher</label>
+                <input type="text" id="teacherName" placeholder="Teacher name">
+            </div>
+
+            <!-- Filter Hint -->
+            <div class="reveal rd7" style="background:rgba(0,107,63,0.05);border:1px solid rgba(0,107,63,0.15);border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:var(--text);line-height:1.6;">
+                <div style="display:flex;align-items:start;gap:8px;">
+                    <span style="font-size:16px;flex-shrink:0;">ℹ️</span>
+                    <div>
+                        <strong style="color:var(--green);">Search Filter Active:</strong> Results will only show if <strong>Exam Type</strong>, <strong>Class</strong>, and <strong>Roll/Name</strong> all match exactly.
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal rd8">
+                <button class="submit-btn" id="submitBtn">Submit &amp; View Result</button>
+            </div>
+
+            <!-- RESULT SECTION -->
+            <div id="resultBox" class="result-box" style="display: none;">
+                <div class="divider"></div>
+
+                <h3 id="resultTitle" style="font-family: 'DM Serif Display', serif; font-size: 1.3rem; text-align: center; margin-bottom: 4px;"></h3>
+
+                <!-- GPA Ring -->
+                <div class="gpa-ring-wrap">
+                    <div class="gpa-ring">
+                        <svg viewBox="0 0 110 110">
+                            <circle class="track" cx="55" cy="55" r="45"/>
+                            <circle class="fill" id="gpaArc" cx="55" cy="55" r="45"/>
+                        </svg>
+                        <div class="gpa-val">
+                            <span id="resultGPA"></span>
+                            <span class="gpa-label">GPA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Rows -->
+                <div id="resultRows"></div>
+
+                <!-- Result Message -->
+                <div id="resultMessage" class="result-msg"></div>
+
+                <!-- View Details Button -->
+                <div id="viewDetailsWrap" class="view-details-wrap">
+                    <a id="viewDetailsBtn" class="view-details-btn" href="#">
+                        <span>View Details</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="site-footer">
+            We can make mistakes.<br>
+            For a copy of result, contact your class teacher or school office.
+        </div>
+
+    </div>
+
+    <script>
+        /* ── PARTICLE SYSTEM ──────────────────────────────────── */
+        (function () {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d', { alpha: true });
+            if (!ctx) return;
+            let w = 0, h = 0;
+            const particles = [];
+            const isMobile = window.innerWidth <= 768;
+            const isLowEnd = isMobile && (window.devicePixelRatio <= 1.5 || navigator.hardwareConcurrency <= 4);
+            const COUNT = isLowEnd ? 15 : isMobile ? 25 : 55;
+            const rand = (min, max) => min + Math.random() * (max - min);
+            function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+            function initParticles() {
+                particles.length = 0;
+                for (let i = 0; i < COUNT; i++) {
+                    particles.push({ x: rand(0, w), y: rand(0, h), r: rand(1.5, 4.5), vx: rand(-0.25, 0.25), vy: rand(-0.5, -0.12), alpha: rand(0.08, 0.35), hue: rand(140, 170) });
+                }
+            }
+            let lastTime = 0;
+            const targetFPS = isMobile ? 30 : 60;
+            const frameInterval = 1000 / targetFPS;
+            function animate(currentTime) {
+                if (currentTime - lastTime < frameInterval) { requestAnimationFrame(animate); return; }
+                lastTime = currentTime;
+                ctx.clearRect(0, 0, w, h);
+                for (let p of particles) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${p.hue}, 70%, 50%, ${p.alpha})`;
+                    if (!isMobile) { ctx.shadowBlur = 10; ctx.shadowColor = `hsla(${p.hue}, 80%, 55%, 0.4)`; }
+                    ctx.fill();
+                    if (!isMobile) { ctx.shadowBlur = 0; }
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.y < -10) { p.y = h + 10; p.x = rand(0, w); }
+                    if (p.x < -10) p.x = w + 10;
+                    if (p.x > w + 10) p.x = -10;
+                }
+                requestAnimationFrame(animate);
+            }
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) requestAnimationFrame(animate); });
+            window.addEventListener('resize', () => { clearTimeout(window.resizeTimeout); window.resizeTimeout = setTimeout(() => { resize(); initParticles(); }, 250); });
+            resize(); initParticles(); requestAnimationFrame(animate);
+        })();
+
+        /* ── REVEAL OBSERVER ──────────────────────────────────── */
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        /* ── DROPDOWN MANAGER ─────────────────────────────────── */
+        class DropdownManager {
+            constructor() { this.active = null; this.dropdowns = new Map(); this.portal = null; this.init(); }
+            init() { this.createPortal(); this.initAllDropdowns(); this.bindGlobalEvents(); }
+            createPortal() { this.portal = document.createElement('div'); this.portal.className = 'cs-portal'; document.body.appendChild(this.portal); }
+            initAllDropdowns() {
+                document.querySelectorAll('.custom-select').forEach(select => {
+                    const trigger = select.querySelector('.cs-trigger');
+                    const dropdown = select.querySelector('.cs-dropdown');
+                    const options = select.querySelectorAll('.cs-option');
+                    if (!trigger || !dropdown) return;
+                    const instance = { el: select, trigger, dropdown, options: Array.from(options), isOpen: false };
+                    this.dropdowns.set(select, instance);
+                    const handleTrigger = (e) => { e.stopPropagation(); e.preventDefault(); this.toggle(select); };
+                    trigger.addEventListener('click', handleTrigger);
+                    trigger.addEventListener('touchend', handleTrigger, { passive: false });
+                    options.forEach((opt, idx) => {
+                        const handleOpt = (e) => { e.stopPropagation(); this.selectOption(select, idx); };
+                        opt.addEventListener('click', handleOpt);
+                        opt.addEventListener('touchend', handleOpt, { passive: false });
+                    });
+                });
+            }
+            bindGlobalEvents() {
+                const outside = (e) => { if (!e.target.closest('.custom-select') && !e.target.closest('.cs-portal') && this.active) this.close(this.active); };
+                document.addEventListener('click', outside);
+                document.addEventListener('touchstart', outside, { passive: true });
+                window.addEventListener('resize', () => { if (this.active) this.position(this.active); }, { passive: true });
+                window.addEventListener('orientationchange', () => { if (this.active) this.close(this.active); });
+            }
+            toggle(select) { if (this.active === select) { this.close(select); } else { if (this.active) this.close(this.active); this.open(select); } }
+            open(select) {
+                const inst = this.dropdowns.get(select); if (!inst) return;
+                this.active = select; inst.isOpen = true; inst.trigger.classList.add('active');
+                this.portal.innerHTML = '';
+                const cloned = inst.dropdown.cloneNode(true);
+                this.portal.appendChild(cloned); this.portal.classList.add('active'); cloned.classList.add('show');
+                this.position(select);
+                cloned.querySelectorAll('.cs-option').forEach((opt, i) => {
+                    const h = (e) => { e.stopPropagation(); this.selectOption(select, i); };
+                    opt.addEventListener('click', h); opt.addEventListener('touchend', h, { passive: false });
+                });
+            }
+            close(select) {
+                const inst = this.dropdowns.get(select); if (!inst) return;
+                this.active = null; inst.isOpen = false; inst.trigger.classList.remove('active'); this.portal.classList.remove('active');
+                const ad = this.portal.querySelector('.cs-dropdown'); if (ad) { ad.classList.remove('show'); setTimeout(() => this.portal.innerHTML = '', 240); }
+            }
+            position(select) {
+                const inst = this.dropdowns.get(select); if (!inst || !inst.isOpen) return;
+                const rect = inst.trigger.getBoundingClientRect(); const cloned = this.portal.querySelector('.cs-dropdown'); if (!cloned) return;
+                const dropH = cloned.offsetHeight; const dropW = cloned.offsetWidth; const vH = window.innerHeight; const vW = window.innerWidth;
+                let top = rect.bottom + 10; let left = rect.left;
+                if ((vH - rect.bottom - 10) < dropH) top = rect.top - dropH - 10;
+                top = Math.max(10, Math.min(top, vH - dropH - 10));
+                if (left + dropW > vW - 10) left = vW - dropW - 10;
+                left = Math.max(10, left);
+                let width = rect.width;
+                if (window.innerWidth <= 480) { const mw = vW - 24; if (width > mw) { width = mw; left = 12; } }
+                this.portal.style.cssText = `left:${left}px;top:${top}px;width:${width}px;`;
+                if (window.innerWidth <= 768) cloned.style.maxHeight = Math.min(200, vH * 0.4) + 'px';
+            }
+            selectOption(select, idx) {
+                const inst = this.dropdowns.get(select); if (!inst) return;
+                const option = inst.options[idx]; if (!option) return;
+                inst.options.forEach(o => o.classList.remove('selected')); option.classList.add('selected');
+                const label = inst.trigger.querySelector('.cs-label'); if (label) label.textContent = option.dataset.value;
+                this.close(select);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new DropdownManager());
+        } else {
+            new DropdownManager();
+        }
+
+        /* ── RESULT THEMES ────────────────────────────────────── */
+        const RESULT_THEMES = {
+            pass: {
+                bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+                border: '#006B3F', text: '#166534', stroke: '#00a85a',
+                badge: 'background:rgba(0,107,63,0.12);color:#166534;border:1px solid rgba(0,107,63,0.25)',
+                msgBg: 'rgba(0,107,63,0.07)', msg: '🎉 Congratulations! Your result has been verified.'
+            },
+            fail: {
+                bg: 'linear-gradient(135deg, #fff1f2, #fee2e2)',
+                border: '#b91c1c', text: '#991b1b', stroke: '#ef4444',
+                badge: 'background:rgba(185,28,28,0.1);color:#991b1b;border:1px solid rgba(185,28,28,0.25)',
+                msgBg: 'rgba(185,28,28,0.07)', msg: '📚 Better luck next time. Keep studying hard!'
+            }
+        };
+
+        function getDropdownValue(id) {
+            const select = document.getElementById(id);
+            if (!select) return '';
+            const selected = select.querySelector('.cs-option.selected');
+            return selected ? selected.dataset.value : '';
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FIREBASE REALTIME DATABASE — DATA LAYER
+           Replaces localStorage getDB() with Firebase reads
+        ═══════════════════════════════════════════════════════════ */
+        let firebaseReady = false;
+        let _localCache = [];
+        let _unsubscribe = null;
+
+        /* Wait for Firebase to initialize */
+        async function initFirebase() {
+            return new Promise((resolve) => {
+                if (window._firebase) {
+                    firebaseReady = true;
+                    resolve();
+                } else {
+                    window.addEventListener('firebase-ready', () => {
+                        firebaseReady = true;
+                        resolve();
+                    });
+                }
+            });
+        }
+
+        /* READ all students from Firebase Realtime Database */
+        async function getDB() {
+            if (!firebaseReady) return _localCache;
+            const { ref, get } = window._firebase;
+            try {
+                const snapshot = await get(ref(window._firebase.db, 'results'));
+                const val = snapshot.val();
+                if (val) {
+                    _localCache = Object.entries(val).map(([id, data]) => ({ id, ...data }));
+                } else {
+                    _localCache = [];
+                }
+            } catch (e) {
+                console.error('Firebase read error:', e);
+            }
+            return _localCache;
+        }
+
+        /* SETUP REAL-TIME LISTENER — auto-updates when cloud changes */
+        function setupRealtimeListener() {
+            if (!firebaseReady) return;
+            const { ref, onValue } = window._firebase;
+            _unsubscribe = onValue(ref(window._firebase.db, 'results'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    _localCache = Object.entries(val).map(([id, data]) => ({ id, ...data }));
+                } else {
+                    _localCache = [];
+                }
+                console.log('☁️ Real-time sync: ' + _localCache.length + ' students loaded from cloud');
+            }, (error) => {
+                console.error('Firebase realtime listener error:', error);
+            });
+        }
+
+        /* ── GRADE & GPA FUNCTIONS (same as about2 & sheet) ─── */
+        function gpaOf(pct) {
+            if (pct >= 90) return 5;
+            if (pct >= 80) return 4;
+            if (pct >= 70) return 3.5;
+            if (pct >= 60) return 3;
+            if (pct >= 50) return 2.5;
+            if (pct >= 40) return 2;
+            return 1;
+        }
+
+        function fullMark(cls, sub) {
+            const is910 = ['Class 9','Class 10','SSC Batch 2027','SSC Batch 2028'].includes(cls);
+            if (['বাংলা ২য় পত্র','ইংরেজি ২য় পত্র'].includes(sub) && !is910) return 50;
+            return 100;
+        }
+
+        function calculateStudentGPA(student) {
+            if (!student.subjects || !student.subjects.length) return '0.00';
+            let gpaSum = 0, count = 0;
+            student.subjects.forEach(s => {
+                const fm = fullMark(student.class || '', s.subject);
+                const marks = parseFloat(s.marks) || 0;
+                const pct = fm > 0 ? (marks / fm) * 100 : 0;
+                gpaSum += gpaOf(pct);
+                count++;
+            });
+            return count ? (gpaSum / count).toFixed(2) : '0.00';
+        }
+
+        /* ── DISPLAY RESULT ───────────────────────────────────── */
+        function displayResult({ title, gpa, content, theme, isPass, student }) {
+            const box = document.getElementById('resultBox');
+            const titleEl = document.getElementById('resultTitle');
+            const gpaEl = document.getElementById('resultGPA');
+            const arc = document.getElementById('gpaArc');
+            const rows = document.getElementById('resultRows');
+            const msg = document.getElementById('resultMessage');
+            const wrap = document.getElementById('viewDetailsWrap');
+            const btn = document.getElementById('viewDetailsBtn');
+
+            if (!box) return;
+
+            wrap.classList.remove('show');
+
+            box.style.backgroundImage = theme.bg;
+            box.style.borderColor = theme.border;
+            box.style.display = 'block';
+
+            titleEl.textContent = title;
+            titleEl.style.color = theme.text;
+
+            if (gpa) {
+                gpaEl.textContent = gpa;
+                gpaEl.style.color = theme.text;
+                arc.style.stroke = theme.stroke;
+                const pct = Math.min(parseFloat(gpa) / 5, 1);
+                arc.style.strokeDashoffset = 283 - (pct * 283);
+            }
+
+            rows.innerHTML = content;
+            msg.style.background = theme.msgBg;
+            msg.style.color = theme.text;
+            msg.innerHTML = theme.msg;
+
+            // Set View Details link — only for the searched student
+            if (student && student.id) {
+                btn.href = `sheet.html?id=${encodeURIComponent(student.id)}`;
+            } else if (student && student.roll) {
+                btn.href = `sheet.html?roll=${encodeURIComponent(student.roll)}`;
+            } else {
+                btn.href = '#';
+            }
+
+            requestAnimationFrame(() => {
+                box.classList.add('show');
+                setTimeout(() => {
+                    document.querySelectorAll('.result-row').forEach(r => r.classList.add('show'));
+                    msg.classList.add('show');
+                    if (student) wrap.classList.add('show');
+                }, 180);
+                const scrollOpts = { behavior: window.innerWidth <= 768 ? 'auto' : 'smooth', block: 'nearest' };
+                if (window.innerWidth <= 768) { setTimeout(() => box.scrollIntoView(scrollOpts), 200); }
+                else { box.scrollIntoView(scrollOpts); }
+            });
+        }
+
+        /* ── SHOW FOUND STUDENT ───────────────────────────────── */
+        function showStudentResult(student, formData) {
+            const gpa = calculateStudentGPA(student);
+            const isPass = parseFloat(gpa) >= 2.0;
+            const theme = isPass ? RESULT_THEMES.pass : RESULT_THEMES.fail;
+
+            const content = `
+                <div class="result-row" style="transition-delay:0.15s"><span class="rk">Exam Type</span><span class="rv">${formData.examType}</span></div>
+                <div class="result-row" style="transition-delay:0.22s"><span class="rk">Class</span><span class="rv">${student.class || formData.studentClass}</span></div>
+                <div class="result-row" style="transition-delay:0.29s"><span class="rk">Roll No</span><span class="rv">${student.roll}</span></div>
+                <div class="result-row" style="transition-delay:0.36s"><span class="rk">Student Name</span><span class="rv">${student.name}</span></div>
+                <div class="result-row" style="transition-delay:0.43s"><span class="rk">Class Teacher</span><span class="rv">${formData.teacherName}</span></div>
+                <div class="result-row" style="transition-delay:0.50s"><span class="rk">Status</span><span class="rv"><span class="status-badge" style="${theme.badge}">${isPass ? '✅ PASSED' : '❌ FAILED'}</span></span></div>
+            `;
+
+            displayResult({
+                title: isPass ? '✅ Result Found' : '❌ Result Found',
+                gpa, content, theme, isPass, student
+            });
+        }
+
+        /* ── SHOW MULTIPLE MATCHES (WITH FILTER INFO) ────────────────────────────── */
+        function showMultipleResults(students, formData) {
+            let listHTML = `
+                <div style="text-align:center;margin-bottom:16px">
+                    <p style="font-size:14px;color:#64748b;margin-bottom:12px">Multiple students found matching:</p>
+                    <div style="background:rgba(0,107,63,0.05);border:1px solid rgba(0,107,63,0.15);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#374151">
+                        <strong>${formData.examType}</strong> • <strong>${formData.studentClass}</strong>
+                    </div>
+                    <p style="font-size:13px;color:#64748b">Please select the correct student:</p>
+                </div>`;
+            
+            students.forEach((stu, i) => {
+                const gpa = calculateStudentGPA(stu);
+                listHTML += `
+                    <div class="result-row" onclick="pickStudent('${stu.id}', event)"
+                         style="cursor:pointer;transition-delay:${0.15+i*0.1}s;padding:14px;border:1px solid #d1fae5;border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,0.5);">
+                        <div style="flex:1">
+                            <div style="font-weight:600;color:#1e293b;margin-bottom:4px">${stu.name}</div>
+                            <div style="font-size:12px;color:#64748b">
+                                Roll: <strong>${stu.roll}</strong> • 
+                                GPA: <strong style="color:#059669">${gpa}</strong> • 
+                                ${stu.subjects ? stu.subjects.length : 0} subjects
+                            </div>
+                        </div>
+                        <div style="color:#059669;font-size:18px">→</div>
+                    </div>`;
+            });
+
+            const theme = { bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)', border:'#006B3F', text:'#166534', stroke:'#00a85a', msgBg:'rgba(0,107,63,0.07)', msg:'<p style="text-align:center;font-size:14px;color:#64748b">Click on a student to view their complete result</p>' };
+            displayResult({ title: `🔍 ${students.length} Students Found`, gpa: null, content: listHTML, theme, isPass: false, student: null });
+            // Hide wrap since no single student selected
+            document.getElementById('viewDetailsWrap').classList.remove('show');
+        }
+
+        function pickStudent(id, e) {
+            e && e.stopPropagation();
+            const db = _localCache;
+            const student = db.find(s => s.id === id);
+            if (!student) return;
+            const formData = {
+                examType: getDropdownValue('csExamType'),
+                studentClass: getDropdownValue('csClass'),
+                teacherName: document.getElementById('teacherName').value.trim() || '—'
+            };
+            showStudentResult(student, formData);
+        }
+
+        /* ── NO RESULT FOUND ──────────────────────────────────── */
+        function showNoResult(term) {
+            const content = `
+                <div style="text-align:center;padding:32px 0">
+                    <div style="font-size:48px;margin-bottom:16px">🔍</div>
+                    <h3 style="font-size:20px;font-weight:600;color:#374151;margin-bottom:8px">No Result Found</h3>
+                    <p style="color:#6b7280;margin-bottom:16px">No student found with: <strong>"${term}"</strong></p>
+                    <div style="font-size:14px;color:#9ca3af">
+                        <p>• Check if the roll number or name is correct</p>
+                        <p>• Make sure the result has been added by the teacher</p>
+                        <p>• Contact your class teacher for assistance</p>
+                    </div>
+                </div>`;
+            const theme = { bg:'linear-gradient(135deg,#fff1f2,#fee2e2)', border:'#b91c1c', text:'#991b1b', stroke:'#ef4444', msgBg:'rgba(185,28,28,0.07)', msg:'📚 Please verify your information and try again' };
+            displayResult({ title: '❌ No Result Found', gpa: null, content, theme, isPass: false, student: null });
+            document.getElementById('viewDetailsWrap').classList.remove('show');
+        }
+
+        /* ── MAIN SEARCH HANDLER (WITH FILTERS) ──────────────────────────────── */
+        async function handleSearch() {
+            const formData = {
+                examType: getDropdownValue('csExamType'),
+                studentClass: getDropdownValue('csClass'),
+                roll: document.getElementById('roll').value.trim(),
+                studentName: document.getElementById('studentName').value.trim(),
+                teacherName: document.getElementById('teacherName').value.trim() || '—'
+            };
+
+            if (!formData.roll && !formData.studentName) {
+                modalAlert('Please enter either Roll Number or Student Name', 'Input Required', 'warning');
+                return;
+            }
+
+            // Get data from Firebase Realtime Database cache
+            const db = await getDB();
+            let found = null;
+            let matches = [];
+
+            // FILTER 1: Search by Roll Number with ALL filters
+            if (formData.roll) {
+                matches = db.filter(s => {
+                    // Must match Roll Number
+                    const rollMatch = s.roll && s.roll.toLowerCase() === formData.roll.toLowerCase();
+                    if (!rollMatch) return false;
+
+                    // Must match Class
+                    const classMatch = s.class && s.class === formData.studentClass;
+                    if (!classMatch) return false;
+
+                    // Must match Exam Type
+                    const examMatch = s.examType && s.examType === formData.examType;
+                    if (!examMatch) return false;
+
+                    // If name is provided, must match name too
+                    if (formData.studentName) {
+                        const nameMatch = s.name && s.name.toLowerCase().includes(formData.studentName.toLowerCase());
+                        if (!nameMatch) return false;
+                    }
+
+                    return true;
+                });
+
+                if (matches.length === 1) {
+                    found = matches[0];
+                } else if (matches.length > 1) {
+                    showMultipleResults(matches, formData);
+                    return;
+                }
+            }
+            // FILTER 2: Search by Name with ALL filters
+            else if (formData.studentName) {
+                matches = db.filter(s => {
+                    // Must match Name
+                    const nameMatch = s.name && s.name.toLowerCase().includes(formData.studentName.toLowerCase());
+                    if (!nameMatch) return false;
+
+                    // Must match Class
+                    const classMatch = s.class && s.class === formData.studentClass;
+                    if (!classMatch) return false;
+
+                    // Must match Exam Type
+                    const examMatch = s.examType && s.examType === formData.examType;
+                    if (!examMatch) return false;
+
+                    return true;
+                });
+
+                if (matches.length === 1) {
+                    found = matches[0];
+                } else if (matches.length > 1) {
+                    showMultipleResults(matches, formData);
+                    return;
+                }
+            }
+
+            if (found) {
+                showStudentResult(found, formData);
+            } else {
+                showNoResultWithFilters(formData);
+            }
+        }
+
+        /* ── NO RESULT WITH FILTER INFO ──────────────────────────────── */
+        function showNoResultWithFilters(formData) {
+            const searchTerm = formData.roll || formData.studentName;
+            const content = `
+                <div style="text-align:center;padding:32px 0">
+                    <div style="font-size:48px;margin-bottom:16px">🔍</div>
+                    <h3 style="font-size:20px;font-weight:600;color:#374151;margin-bottom:8px">No Result Found</h3>
+                    <p style="color:#6b7280;margin-bottom:16px">No student found matching all criteria:</p>
+                    <div style="background:rgba(0,107,63,0.05);border:1px solid rgba(0,107,63,0.15);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left">
+                        <div style="font-size:13px;color:#374151;line-height:1.8">
+                            <div><strong>Exam Type:</strong> ${formData.examType}</div>
+                            <div><strong>Class:</strong> ${formData.studentClass}</div>
+                            ${formData.roll ? `<div><strong>Roll Number:</strong> ${formData.roll}</div>` : ''}
+                            ${formData.studentName ? `<div><strong>Student Name:</strong> ${formData.studentName}</div>` : ''}
+                        </div>
+                    </div>
+                    <div style="font-size:14px;color:#9ca3af">
+                        <p>• Check if the exam type is correct</p>
+                        <p>• Verify the class selection</p>
+                        <p>• Ensure roll number or name is correct</p>
+                        <p>• Make sure the result has been added by the teacher</p>
+                        <p>• Contact your class teacher for assistance</p>
+                    </div>
+                </div>`;
+            const theme = { bg:'linear-gradient(135deg,#fff1f2,#fee2e2)', border:'#b91c1c', text:'#991b1b', stroke:'#ef4444', msgBg:'rgba(185,28,28,0.07)', msg:'📚 Please verify all information and try again' };
+            displayResult({ title: '❌ No Result Found', gpa: null, content, theme, isPass: false, student: null });
+            document.getElementById('viewDetailsWrap').classList.remove('show');
+        }
+
+        /* ── INIT ────────────────────────────────────────────── */
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('submitBtn');
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Searching...';
+                if (navigator.vibrate && window.innerWidth <= 768) navigator.vibrate(50);
+                setTimeout(() => {
+                    handleSearch();
+                    btn.disabled = false;
+                    btn.innerHTML = 'Submit &amp; View Result';
+                }, 900);
+            });
+        });
+
+        window.addEventListener('load', async () => {
+            // Initialize Firebase Realtime Database
+            await initFirebase();
+            console.log('✅ Firebase Realtime Database ready for student portal');
+
+            // Setup real-time listener for live cloud sync
+            setupRealtimeListener();
+
+            // Focus roll input
+            setTimeout(() => { const r = document.getElementById('roll'); if (r) r.focus(); }, 700);
+        });
+
+        // Live sync — if teacher updates results, this page auto-refreshes the cache
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'rp_results') {
+                console.log('Database updated — live sync active (Firebase also syncing)');
+                getDB(); // Refresh cache from Firebase
+            }
+        });
+
+        // Cleanup listeners on page unload
+        window.addEventListener('beforeunload', () => {
+            if (_unsubscribe) _unsubscribe();
+            console.log('👋 Cleaning up Firebase listeners');
+        });
+
+        /* ── MODAL POPUP SYSTEM ───────────────────────────────── */
+        let modalResolve = null;
+
+        function showModal({ type = 'info', title = '', message = '', buttons = [] }) {
+            return new Promise((resolve) => {
+                modalResolve = resolve;
+
+                const overlay = document.getElementById('modalOverlay');
+                const icon = document.getElementById('modalIcon');
+                const titleEl = document.getElementById('modalTitle');
+                const messageEl = document.getElementById('modalMessage');
+                const buttonsEl = document.getElementById('modalButtons');
+
+                // Icon mapping
+                const icons = {
+                    success: '✓',
+                    error: '✕',
+                    warning: '⚠',
+                    info: 'ℹ'
+                };
+
+                icon.textContent = icons[type] || icons.info;
+                icon.className = `modal-icon ${type}`;
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+
+                // Build buttons
+                buttonsEl.innerHTML = '';
+                buttons.forEach(btn => {
+                    const button = document.createElement('button');
+                    button.className = `modal-btn ${btn.style || 'secondary'}`;
+                    button.textContent = btn.text;
+                    button.onclick = () => {
+                        hideModal();
+                        if (modalResolve) modalResolve(btn.value);
+                    };
+                    buttonsEl.appendChild(button);
+                });
+
+                // Show modal
+                overlay.classList.add('show');
+
+                // Close on overlay click
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) {
+                        hideModal();
+                        if (modalResolve) modalResolve(null);
+                    }
+                };
+            });
+        }
+
+        function hideModal() {
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.remove('show');
+            modalResolve = null;
+        }
+
+        // Helper functions
+        function modalAlert(message, title = 'Notice', type = 'info') {
+            return showModal({
+                type,
+                title,
+                message,
+                buttons: [{ text: 'OK', style: 'primary', value: true }]
+            });
+        }
+
+        function modalConfirm(message, title = 'Confirm', type = 'warning') {
+            return showModal({
+                type,
+                title,
+                message,
+                buttons: [
+                    { text: 'Cancel', style: 'secondary', value: false },
+                    { text: 'Confirm', style: 'primary', value: true }
+                ]
+            });
+        }
+
+        function modalDelete(message, title = 'Delete Confirmation', type = 'error') {
+            return showModal({
+                type,
+                title,
+                message,
+                buttons: [
+                    { text: 'Cancel', style: 'secondary', value: false },
+                    { text: 'Delete', style: 'danger', value: true }
+                ]
+            });
+        }
+    </script>
+
+    <!-- Theme Sync from Firebase -->
+    <script type="module">
+        // Wait for Firebase to be ready
+        const waitForFirebase = () => {
+            return new Promise((resolve) => {
+                if (window._firebase) {
+                    resolve();
+                } else {
+                    window.addEventListener('firebase-ready', () => resolve());
+                }
+            });
+        };
+
+        waitForFirebase().then(() => {
+            const { db, ref, onValue, get } = window._firebase;
+
+            // Theme sync from Firebase
+            const applyTheme = (isDark) => {
+                document.body.classList.toggle('dark', isDark);
+            };
+
+            // Load and listen for theme changes
+            const themeRef = ref(db, 'settings/theme');
+            
+            // Initial load
+            get(themeRef).then(snapshot => {
+                const theme = snapshot.val();
+                if (theme) {
+                    applyTheme(theme === 'dark');
+                } else {
+                    // Use system preference if no Firebase theme
+                    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    applyTheme(sys);
+                }
+            }).catch(err => {
+                console.warn('Theme load error:', err);
+                // Fallback to system preference
+                const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(sys);
+            });
+
+            // Listen for real-time theme changes
+            onValue(themeRef, snapshot => {
+                const theme = snapshot.val();
+                if (theme) {
+                    applyTheme(theme === 'dark');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

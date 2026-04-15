@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MAGURA COLLECTORATE COLLEGIATE SCHOOL</title>
+<link rel="icon" type="image/png" href="113.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── CSS CUSTOM PROPERTIES ──────────────────────────────── */
+:root {
+  --green:        #30d158;
+  --green-dim:    #25a244;
+  --green-glow:   rgba(48,209,88,.22);
+  --bg:           #f2f2f7;
+  --surface:      rgba(255,255,255,.82);
+  --surface-solid:#ffffff;
+  --border:       rgba(0,0,0,.09);
+  --label:        #1c1c1e;
+  --sub:          #6e6e73;
+  --r-sm:         12px;
+  --r-md:         16px;
+  --r-lg:         22px;
+  --r-xl:         28px;
+  --spring:       cubic-bezier(.34,1.56,.64,1);
+  --ease:         cubic-bezier(.23,1,.32,1);
+  --fast:         cubic-bezier(.25,.46,.45,.94);
+  --sh-sm:        0 2px 8px rgba(0,0,0,.07);
+  --sh-md:        0 4px 20px rgba(0,0,0,.10);
+  --sh-lg:        0 8px 40px rgba(0,0,0,.13);
+  --blur:         blur(20px) saturate(180%);
+}
+.dark {
+  --bg:           #1c1c1e;
+  --surface:      rgba(44,44,46,.85);
+  --surface-solid:#2c2c2e;
+  --border:       rgba(255,255,255,.13);
+  --label:        #f5f5f7;
+  --sub:          #aeaeb2;
+}
+
+/* ── RESET ──────────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;scrollbar-width:none;scroll-padding-top:72px}
+html::-webkit-scrollbar{display:none}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--label);min-height:100vh;
+  overflow-x:hidden;line-height:1.5;
+  transition:background .35s var(--ease),color .35s var(--ease);
+}
+
+/* ── ANIMATED MESH BACKGROUND ───────────────────────────── */
+.mesh{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%,rgba(48,209,88,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%,rgba(48,209,88,.05) 0%,transparent 60%);
+  animation:meshMove 25s ease-in-out infinite;
+  will-change:transform;
+}
+@keyframes meshMove{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(1%,-1%) scale(1.015)}
+  66%{transform:translate(-1%,1%) scale(.99)}
+}
+
+/* ── LOADING ────────────────────────────────────────────── */
+#loading{
+  position:fixed;inset:0;background:var(--bg);z-index:9998;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s var(--ease),visibility .45s;
+  will-change:opacity;
+}
+#loading.out{opacity:0;visibility:hidden;pointer-events:none}
+.spinner{
+  width:40px;height:40px;border:2.5px solid rgba(48,209,88,.2);
+  border-top-color:var(--green);border-radius:50%;
+  animation:spin .85s linear infinite;will-change:transform;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-lbl{font-size:13px;color:var(--sub);letter-spacing:.04em}
+
+/* ── SPLASH ─────────────────────────────────────────────── */
+#splash{
+  position:fixed;inset:0;z-index:9997;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;
+  background:var(--bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  transition:opacity .5s var(--ease);will-change:opacity;
+  pointer-events:none;
+}
+#splash.out{opacity:0}
+.splash-tag{
+  font-size:.82rem;font-weight:500;color:var(--green);
+  letter-spacing:.1em;text-transform:uppercase;
+  opacity:0;animation:fadeUp .5s .9s var(--ease) forwards;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── LOGO ───────────────────────────────────────────────── */
+#logo{
+  position:fixed;z-index:9999;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(1);
+  width:152px;height:152px;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 6px rgba(255,255,255,.95),0 20px 60px var(--green-glow),0 0 0 1px var(--border);
+  animation:logoIn 1.5s var(--spring) forwards;opacity:0;
+  transition:top 1.8s var(--ease),left 1.8s var(--ease),width 1.8s var(--ease),height 1.8s var(--ease),border-radius 1.8s var(--ease),box-shadow 1.8s var(--ease),transform 1.8s var(--ease);
+  will-change:transform,opacity;
+}
+@keyframes logoIn{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.8);filter:blur(8px)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.03);filter:blur(.5px)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:none}
+}
+#logo.small{
+  top:20px!important;left:20px!important;
+  width:48px!important;height:48px!important;
+  border-radius:13px!important;
+  transform:translate(0,0) scale(1)!important;
+  box-shadow:0 0 0 3px rgba(255,255,255,.95),0 6px 20px var(--green-glow),0 0 0 1px var(--border)!important;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header{
+  position:relative;overflow:hidden;padding:60px 24px 44px;text-align:center;
+  background:linear-gradient(145deg,#1a5c44 0%,#267055 50%,#30d158 100%);
+  box-shadow:var(--sh-md);
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='24' cy='24' r='10' fill='none' stroke='%23ffffff' stroke-opacity='0.04' stroke-width='1'/%3E%3C/svg%3E");
+  opacity:.7;
+}
+header h1{
+  font-size:clamp(1.6rem,5vw,2.4rem);font-weight:600;color:#fff;
+  letter-spacing:-.02em;line-height:1.25;position:relative;
+  text-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+header p{
+  color:rgba(255,255,255,.88);font-size:.88rem;font-weight:400;
+  letter-spacing:.05em;margin-top:10px;position:relative;
+}
+
+/* ── DARK TOGGLE ────────────────────────────────────────── */
+#themeBtn{
+  position:fixed;top:16px;right:16px;z-index:1002;
+  width:52px;height:30px;border-radius:15px;
+  background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--sh-sm);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  cursor:pointer;display:flex;align-items:center;padding:3px;
+  transition:background .3s var(--ease),border-color .3s var(--ease);
+  /* FIXED: removed all button all:unset to avoid breaking the toggle */
+}
+.theme-knob{
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.18);
+  transition:transform .35s var(--spring),background .3s var(--ease);
+  will-change:transform;pointer-events:none;
+}
+.dark .theme-knob{transform:translateX(22px);background:linear-gradient(135deg,#ffd600,#ffab00)}
+
+/* ── NAV ────────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:1000;
+  display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:12px 20px;
+  background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--border);box-shadow:var(--sh-sm);
+  transition:padding .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease);
+  will-change:padding,background;
+}
+nav.stuck{padding:8px 20px;background:rgba(255,255,255,.96);box-shadow:var(--sh-md)}
+.dark nav.stuck{background:rgba(28,28,30,.96)}
+
+/* ── BUTTONS ────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  cursor:pointer;font-family:inherit;font-weight:500;font-size:14px;
+  padding:11px 24px;border-radius:999px;color:#fff;border:none;outline:none;
+  background:linear-gradient(135deg,var(--green),#3ae36e);
+  box-shadow:0 4px 14px var(--green-glow),inset 0 1px 0 rgba(255,255,255,.28);
+  position:relative;overflow:hidden;white-space:nowrap;letter-spacing:-.01em;
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease);
+  will-change:transform,box-shadow;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn::before{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transition:left .45s var(--fast);will-change:left;
+}
+.btn:hover::before{left:100%}
+.btn:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 8px 24px rgba(48,209,88,.4)}
+.btn:active{transform:translateY(0) scale(.975);transition-duration:.08s}
+.btn:focus-visible{box-shadow:0 0 0 3px rgba(48,209,88,.45)}
+.btn-full{width:100%;display:flex}
+.btn-nav{
+  font-size:13px;padding:9px 18px;
+  background:rgba(48,209,88,.11);border:1px solid rgba(48,209,88,.22);
+  color:var(--green);box-shadow:none;
+  transition:background .22s var(--ease),color .22s var(--ease),box-shadow .22s var(--ease),transform .18s var(--ease),border-color .22s var(--ease);
+}
+.btn-nav:hover{
+  background:linear-gradient(135deg,var(--green),#3ae36e);
+  border-color:transparent;color:#fff;box-shadow:0 5px 16px var(--green-glow);
+  transform:translateY(-1px);
+}
+.btn-nav.active{
+  background:linear-gradient(135deg,var(--green),#3ae36e);
+  border-color:transparent;color:#fff;box-shadow:0 4px 12px var(--green-glow);
+}
+.btn-ghost{
+  background:rgba(142,142,147,.12)!important;border:1px solid rgba(142,142,147,.2)!important;
+  color:var(--sub)!important;box-shadow:none!important;font-size:13px!important;padding:9px 18px!important;
+}
+.btn-ghost:hover{background:rgba(142,142,147,.2)!important;transform:translateY(-1px)}
+.btn-del{
+  background:linear-gradient(135deg,#ff3b30,#ff6b6b)!important;
+  box-shadow:0 3px 10px rgba(255,59,48,.3)!important;
+  font-size:11.5px!important;padding:7px 14px!important;color:#fff!important;
+  border:none!important;border-radius:999px!important;
+}
+.btn-del:hover{box-shadow:0 6px 18px rgba(255,59,48,.4)!important;transform:translateY(-1px)!important}
+.btn-cancel-md{background:rgba(142,142,147,.12)!important;color:var(--sub)!important;box-shadow:none!important;border:1px solid rgba(142,142,147,.2)!important}
+.btn-confirm{background:linear-gradient(135deg,#ff3b30,#ff6b6b)!important;box-shadow:0 4px 14px rgba(255,59,48,.35)!important}
+
+/* ── RIPPLE ─────────────────────────────────────────────── */
+.ripple{
+  position:absolute;border-radius:50%;background:rgba(255,255,255,.55);
+  pointer-events:none;transform:scale(0);
+  animation:rippleAnim .42s var(--fast) forwards;will-change:transform,opacity;
+}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+.container{max-width:940px;margin:0 auto;padding:36px 20px 72px}
+
+/* ── CARDS ──────────────────────────────────────────────── */
+.card{
+  background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border-radius:var(--r-lg);padding:32px;
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 4px 24px rgba(0,0,0,.07);
+  margin-bottom:24px;
+  opacity:0;transform:translateY(18px);
+  transition:opacity .45s var(--ease),transform .45s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease);
+  will-change:transform,opacity,box-shadow;
+}
+.dark .card{border-color:rgba(255,255,255,.1)}
+.card.visible{opacity:1;transform:none}
+.card:hover{box-shadow:var(--sh-lg);border-color:rgba(48,209,88,.22)}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────────── */
+.sec-title{font-size:1.3rem;font-weight:600;color:var(--label);letter-spacing:-.01em;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.sublabel{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin:24px 0 8px;padding-left:2px}
+.card-header{text-align:center;margin-bottom:26px}
+.card-header h2{font-size:1.5rem;font-weight:600;color:var(--label);letter-spacing:-.01em;margin-bottom:6px}
+.card-header p{font-size:13px;color:var(--sub)}
+
+/* ── INPUTS ─────────────────────────────────────────────── */
+input,textarea,select{
+  font-family:inherit;width:100%;padding:13px 17px;margin-bottom:11px;
+  border:1px solid var(--border);border-radius:var(--r-sm);font-size:14px;
+  background:var(--surface-solid);color:var(--label);
+  transition:border-color .2s var(--ease),box-shadow .2s var(--ease),background .2s var(--ease);
+  appearance:none;outline:none;
+}
+.dark input,.dark textarea,.dark select{background:rgba(44,44,46,.9);color:var(--label)}
+input::placeholder,textarea::placeholder{color:var(--sub);opacity:.7}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--green);box-shadow:0 0 0 4px rgba(48,209,88,.15);
+}
+textarea{resize:vertical;min-height:88px;line-height:1.5}
+
+/* ── DIVIDER ────────────────────────────────────────────── */
+.divider{
+  height:1px;margin:28px 0;position:relative;overflow:hidden;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+}
+.divider::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(48,209,88,.35),transparent);
+  animation:shine 5s linear infinite;will-change:left;
+}
+@keyframes shine{0%{left:-100%}100%{left:100%}}
+
+/* ── LIST ───────────────────────────────────────────────── */
+.dlist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.dlist li{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:13px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:14px;backdrop-filter:blur(10px);
+  transition:box-shadow .2s var(--ease),transform .2s var(--ease),border-color .2s var(--ease);
+  will-change:transform;
+  animation:liIn .3s var(--ease) both;
+}
+@keyframes liIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:none}}
+.dlist li:nth-child(1){animation-delay:.02s}
+.dlist li:nth-child(2){animation-delay:.04s}
+.dlist li:nth-child(3){animation-delay:.06s}
+.dlist li:nth-child(4){animation-delay:.08s}
+.dlist li:nth-child(5){animation-delay:.10s}
+.dlist li:hover{box-shadow:var(--sh-md);transform:translateX(3px);border-color:rgba(48,209,88,.22)}
+.dlist li span{flex:1;color:var(--label)}
+.empty{
+  text-align:center;padding:28px 20px;color:var(--sub);font-size:13.5px;
+  background:rgba(48,209,88,.05);border:1px dashed rgba(48,209,88,.22);
+  border-radius:var(--r-sm);transition:background .3s var(--ease);
+}
+
+/* ── GRID: TEACHER ADD PANELS ───────────────────────────── */
+.add-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:680px){.add-grid{grid-template-columns:1fr}}
+.panel{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r-md);padding:20px 18px;
+  backdrop-filter:blur(10px);
+  transition:box-shadow .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);
+  will-change:transform;
+}
+.panel:hover{box-shadow:var(--sh-md);border-color:rgba(48,209,88,.28);transform:translateY(-2px)}
+.panel-title{font-size:.95rem;font-weight:600;color:var(--label);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* ── IMAGE UPLOAD ───────────────────────────────────────── */
+.upload-zone{
+  border:2px dashed rgba(48,209,88,.32);border-radius:var(--r-sm);
+  padding:28px 16px;text-align:center;cursor:pointer;position:relative;
+  background:var(--surface-solid);margin-bottom:11px;
+  transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease);
+  will-change:transform;
+}
+.upload-zone:hover{border-color:var(--green);background:rgba(48,209,88,.05);transform:scale(1.01)}
+.upload-zone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;
+  width:100%;height:100%;margin:0;padding:0;border:none;background:none;
+}
+.upload-icon{font-size:28px;margin-bottom:6px;opacity:.75;transition:transform .2s var(--ease)}
+.upload-zone:hover .upload-icon{transform:scale(1.1)}
+.upload-text{font-size:13px;color:var(--sub);transition:color .2s var(--ease)}
+.upload-zone:hover .upload-text{color:var(--green)}
+.upload-hint{font-size:11px;color:var(--sub);opacity:.65;margin-top:3px}
+#imgPreview{width:100%;max-height:170px;object-fit:contain;border-radius:var(--r-sm);margin-bottom:10px;display:none;background:var(--surface-solid);border:1px solid var(--border)}
+
+/* ── NOTICE OVERLAY / MODAL ─────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);z-index:8000;
+  opacity:0;pointer-events:none;transition:opacity .3s var(--ease);will-change:opacity;
+}
+.overlay.show{opacity:1;pointer-events:all}
+#noticeModal{
+  position:fixed;top:50%;left:50%;z-index:8100;
+  transform:translate(-50%,-50%) scale(.93);opacity:0;pointer-events:none;
+  width:min(520px,94vw);max-height:82vh;
+  background:var(--surface);border-radius:var(--r-xl);border:1px solid rgba(255,255,255,.5);
+  box-shadow:var(--sh-lg);
+  display:flex;flex-direction:column;overflow:hidden;
+  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  transition:transform .35s var(--spring),opacity .35s var(--ease);will-change:transform,opacity;
+}
+.dark #noticeModal{border-color:rgba(255,255,255,.12)}
+#noticeModal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all}
+.modal-head{
+  background:linear-gradient(135deg,#1a5c44,#267055);
+  padding:18px 22px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;
+}
+.modal-head h3{font-size:1.15rem;font-weight:600;color:#fff;letter-spacing:-.01em}
+.modal-close{
+  width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);
+  border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s var(--ease),transform .2s var(--ease);flex-shrink:0;
+}
+.modal-close:hover{background:rgba(255,255,255,.3);transform:scale(1.1)}
+.modal-body{padding:22px 26px;overflow-y:auto;flex:1;scroll-behavior:smooth}
+.modal-body::-webkit-scrollbar{width:5px}
+.modal-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:3px}
+.dark .modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22)}
+.notice-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:14px 16px;margin-bottom:11px;font-size:14px;line-height:1.6;color:var(--label);
+  display:flex;align-items:flex-start;gap:11px;
+  backdrop-filter:blur(10px);
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.notice-item:hover{transform:translateX(2px);box-shadow:var(--sh-sm)}
+.n-icon{font-size:17px;margin-top:1px;flex-shrink:0}
+.notice-img-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);
+  overflow:hidden;margin-bottom:11px;
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.notice-img-item:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.notice-img-item img{width:100%;max-height:280px;object-fit:contain;background:var(--surface-solid);display:block}
+.img-cap{padding:9px 13px;font-size:13px;color:var(--sub)}
+
+/* ── DELETE MODAL ───────────────────────────────────────── */
+#deleteOverlay{z-index:9400}
+#deleteModal{
+  position:fixed;top:50%;left:50%;z-index:9500;
+  transform:translate(-50%,-50%) scale(.93);opacity:0;pointer-events:none;
+  width:min(420px,92vw);
+  background:var(--surface);border-radius:var(--r-xl);border:1.5px solid rgba(255,59,48,.2);
+  box-shadow:var(--sh-lg);display:flex;flex-direction:column;overflow:hidden;
+  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  transition:transform .35s var(--spring),opacity .35s var(--ease);will-change:transform,opacity;
+}
+#deleteModal.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all}
+.del-head{
+  background:linear-gradient(135deg,#ff3b30,#ff6b6b);
+  padding:16px 22px;display:flex;align-items:center;gap:11px;
+}
+.del-warn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.del-head h3{font-size:1.1rem;font-weight:600;color:#fff}
+.del-body{padding:22px}
+.del-preview{background:rgba(255,59,48,.06);border:1px solid rgba(255,59,48,.14);border-radius:var(--r-sm);padding:14px;font-size:14px;line-height:1.6;color:var(--label);margin-bottom:8px}
+.del-warn-text{font-size:12.5px;color:var(--sub);text-align:center}
+.del-actions{display:flex;gap:11px;padding:4px 22px 22px;justify-content:flex-end}
+.del-actions .btn{padding:9px 20px!important;font-size:13px!important;border-radius:12px!important}
+
+/* ── TOAST ──────────────────────────────────────────────── */
+#toasts{
+  position:fixed;top:20px;right:20px;z-index:10002;
+  display:flex;flex-direction:column;gap:9px;pointer-events:none;
+}
+.toast{
+  background:var(--surface);border-radius:var(--r-md);padding:13px 18px;
+  box-shadow:var(--sh-lg);display:flex;align-items:center;gap:11px;font-size:14px;
+  min-width:260px;border-left:4px solid var(--green);border-top:1px solid rgba(255,255,255,.5);
+  backdrop-filter:blur(14px);pointer-events:auto;
+  animation:toastIn .4s var(--ease) both;will-change:transform,opacity;
+}
+.toast.danger{border-left-color:#ff3b30}
+@keyframes toastIn{from{opacity:0;transform:translateX(28px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes toastOut{from{opacity:1;transform:none}to{opacity:0;transform:translateX(28px) scale(.97)}}
+.t-icon{font-size:17px;flex-shrink:0}
+.t-title{font-size:13px;font-weight:600;display:block;margin-bottom:2px;color:var(--label)}
+.t-msg{font-size:12px;color:var(--sub)}
+
+/* ── DEV FLOAT BTN ──────────────────────────────────────── */
+.dev-float{
+  position:fixed;bottom:26px;right:26px;width:52px;height:52px;
+  border-radius:50%;border:none;outline:none;cursor:pointer;
+  background:linear-gradient(135deg,#5e5ce6,#bf5af2);
+  box-shadow:0 8px 26px rgba(94,92,230,.38),inset 0 1px 0 rgba(255,255,255,.2);
+  font-size:20px;z-index:7900;display:flex;align-items:center;justify-content:center;
+  animation:floatY 5s ease-in-out infinite;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease);will-change:transform;
+}
+.dev-float:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(94,92,230,.52)}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* ── DEV BOX ────────────────────────────────────────────── */
+#devOverlay{z-index:8800}
+.dev-box{
+  position:fixed;top:50%;left:50%;z-index:8900;
+  transform:translate(-50%,-50%) scale(.9);opacity:0;pointer-events:none;
+  width:min(370px,92vw);padding:32px 26px 26px;border-radius:var(--r-xl);
+  background:linear-gradient(145deg,#1c1c1e,#2c2c2e,#1c1c1e);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 32px 80px rgba(0,0,0,.55),0 0 80px rgba(94,92,230,.12);
+  text-align:center;overflow:hidden;
+  transition:transform .4s var(--spring),opacity .4s var(--ease);will-change:transform,opacity;
+}
+.dev-box.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all}
+.dev-close{
+  position:absolute;top:13px;right:14px;width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .22s var(--ease),transform .22s var(--ease);
+}
+.dev-close:hover{background:rgba(255,59,48,.2);transform:scale(1.1) rotate(90deg)}
+.dev-avatar-wrap{position:relative;width:72px;height:72px;margin:0 auto 16px}
+.ring{
+  position:absolute;inset:0;border-radius:50%;border:2px solid transparent;
+  background:linear-gradient(135deg,#5e5ce6,#bf5af2,#30d158) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:destination-out;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  animation:ringRot 5s linear infinite;will-change:transform;
+}
+.ring.r2{inset:5px;border-width:1.5px;background:linear-gradient(315deg,#bf5af2,#ff6b6b) border-box;animation-duration:7s;animation-direction:reverse;opacity:.5}
+@keyframes ringRot{to{transform:rotate(360deg)}}
+.dev-emoji{font-size:28px;position:relative;z-index:1;animation:breathe 3s ease-in-out infinite;will-change:transform}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.dev-name{font-size:1.2rem;font-weight:600;color:#fff;letter-spacing:-.01em;line-height:1.35;text-shadow:0 0 20px rgba(94,92,230,.35)}
+.dev-role{font-size:10.5px;font-weight:500;color:rgba(196,181,253,.8);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.dev-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);margin:20px 0;position:relative}
+.dev-sep::after{content:'✦';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:rgba(196,181,253,.6);font-size:8px;background:#1c1c1e;padding:0 7px}
+.chip{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;text-align:left;margin-bottom:8px;transition:background .22s var(--ease),transform .22s var(--ease)}
+.chip:hover{background:rgba(94,92,230,.1);transform:translateX(3px)}
+.chip-i{font-size:17px;min-width:24px;text-align:center}
+.chip-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(196,181,253,.7);margin-bottom:2px}
+.chip-val{font-size:12px;color:rgba(255,255,255,.88);line-height:1.4}
+.dev-foot{margin-top:20px;font-size:9.5px;color:rgba(196,181,253,.5);letter-spacing:.08em}
+.spark{color:rgba(191,90,242,.65);animation:sp 2.5s ease-in-out infinite}
+.spark:nth-child(3){animation-delay:1.2s}
+@keyframes sp{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media(max-width:640px){
+  header{padding:48px 18px 38px}
+  .container{padding:26px 16px 60px}
+  .card{padding:22px 17px}
+  #toasts{right:14px;left:14px}
+  .toast{min-width:auto;width:100%;max-width:400px;margin:0 auto}
+  .dev-float{bottom:20px;right:20px;width:46px;height:46px;font-size:18px}
+  #themeBtn{top:14px;right:14px;width:47px;height:28px}
+  .theme-knob{width:20px;height:20px;font-size:11px}
+  .dark .theme-knob{transform:translateX(19px)}
+  #logo.small{top:18px!important;left:18px!important;width:44px!important;height:44px!important}
+}
+@media(max-width:400px){
+  nav button{padding:8px 14px;font-size:12px}
+  .btn{padding:10px 20px;font-size:13px}
+}
+
+/* ── REDUCED MOTION ─────────────────────────────────────── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* ── UTILITIES ──────────────────────────────────────────── */
+.hidden{display:none!important}
+img{max-width:100%;height:auto;display:block}
+</style>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import{getAnalytics}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+import{getDatabase,ref,push,set,remove,onValue,get}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+const cfg={
+  apiKey:"AIzaSyCdXFMoMkZSfPZkMtJDDFj3TjRQ4GCISjM",
+  authDomain:"mccs-7f895.firebaseapp.com",
+  databaseURL:"https://mccs-7f895-default-rtdb.firebaseio.com",
+  projectId:"mccs-7f895",
+  storageBucket:"mccs-7f895.firebasestorage.app",
+  messagingSenderId:"148357261534",
+  appId:"1:148357261534:web:b2db753d261586cbb07a4f",
+  measurementId:"G-JCSJZM9CXP"
+};
+const app=initializeApp(cfg);
+try{getAnalytics(app)}catch(e){}
+const db=getDatabase(app);
+window._fb={db,ref,push,set,remove,onValue,get};
+window.dispatchEvent(new Event("fb-ready"));
+</script>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="load-lbl">Loading…</div>
+</div>
+
+<!-- MESH BG -->
+<div class="mesh"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-tag">Magura Collectorate Collegiate School</div>
+</div>
+
+<!-- LOGO (animated, migrates to corner) -->
+<img id="logo" src="112.png" alt="MCCS Logo"
+     onerror="this.src='https://placehold.co/180x180/30d158/ffffff?text=MCCS'">
+
+<!-- DARK MODE TOGGLE -->
+<button id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">
+  <div class="theme-knob">🌙</div>
+</button>
+
+<!-- HEADER -->
+<header>
+  <h1>🏫 Magura Collectorate Collegiate School</h1>
+  <p>Student &amp; Teacher Portal</p>
+</header>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <button class="btn btn-nav" id="navHome" onclick="goHome()">🏠 Home</button>
+  <button class="btn btn-nav hidden" id="navBack" onclick="backToEntry()">← Back</button>
+  <button class="btn btn-nav" id="navStudent" onclick="showSection('studentBox')">🎓 Student</button>
+  <button class="btn btn-nav hidden" id="navTeacher" onclick="showSection('teacherBox')">👩‍🏫 Teacher</button>
+  <button class="btn btn-nav hidden" id="navLogout" onclick="logout()">🚪 Logout</button>
+</nav>
+
+<!-- OVERLAYS & MODALS -->
+<div class="overlay" id="noticeOverlay" onclick="closeNoticeModal()"></div>
+<div id="noticeModal">
+  <div class="modal-head">
+    <h3>📢 Notices</h3>
+    <button class="modal-close" onclick="closeNoticeModal()" aria-label="Close">✕</button>
+  </div>
+  <div class="modal-body" id="noticeBody"></div>
+</div>
+
+<div class="overlay" id="deleteOverlay" onclick="closeDeleteModal()"></div>
+<div id="deleteModal">
+  <div class="del-head">
+    <div class="del-warn">⚠️</div>
+    <h3 id="delTitle">Delete Item</h3>
+  </div>
+  <div class="del-body">
+    <div class="del-preview" id="delPreview"></div>
+    <div class="del-warn-text">This action cannot be undone.</div>
+  </div>
+  <div class="del-actions">
+    <button class="btn btn-cancel-md" onclick="closeDeleteModal()">Cancel</button>
+    <button class="btn btn-confirm" id="delConfirmBtn">Delete</button>
+  </div>
+</div>
+
+<div class="overlay" id="devOverlay" onclick="toggleDev()"></div>
+<div class="dev-box" id="devBox">
+  <button class="dev-close" onclick="toggleDev()" aria-label="Close">✕</button>
+  <div class="dev-avatar-wrap">
+    <div class="ring"></div><div class="ring r2"></div>
+    <div class="dev-emoji">👨‍💻</div>
+  </div>
+  <div class="dev-name">Senior Developer<br><span style="font-size:.85em;font-weight:400">Protik Biswas</span></div>
+  <div class="dev-role">Frontend Developer &amp; Designer</div>
+  <div class="dev-sep"></div>
+  <div class="chip"><span class="chip-i">🧑‍🎓</span><div><div class="chip-lbl">Student</div><div class="chip-val">Focused on growth and real‑world skills</div></div></div>
+  <div class="chip"><span class="chip-i">✒️</span><div><div class="chip-lbl">Academic</div><div class="chip-val">Learning today. Leading tomorrow.</div></div></div>
+  <div class="dev-foot"><span class="spark">✦</span> Built with care <span class="spark">✦</span></div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toasts"></div>
+
+<!-- ABOUT FLOAT BUTTON -->
+<button class="dev-float" onclick="toggleDev()" title="About Developer" aria-label="About Developer">⁉️</button>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- STUDENT ENTRY -->
+  <div class="card" id="studentEntry">
+    <div class="card-header">
+      <h2>🎓 Welcome to the Portal</h2>
+      <p>Your journey to excellence starts here</p>
+    </div>
+    <div style="text-align:center;padding:20px 0 24px;line-height:1.75">
+      <p style="font-size:15px;color:var(--label);margin-bottom:16px">
+        <strong style="color:var(--green)">📚 Knowledge is Power</strong><br>
+        Access notices, results, and class routines instantly.
+      </p>
+      <p style="font-size:13px;color:var(--sub);font-style:italic;opacity:.9">
+        "Education is the most powerful weapon which you can use to change the world."
+      </p>
+    </div>
+    <button class="btn btn-full" onclick="continueAsStudent()">Continue as Student →</button>
+    <div class="divider"></div>
+    <p style="text-align:center;font-size:13px;color:var(--sub);margin-bottom:12px">Are you a Teacher?</p>
+    <button class="btn btn-full" onclick="showTeacherLogin()">👩‍🏫 Teacher Dashboard</button>
+  </div>
+
+  <!-- TEACHER LOGIN -->
+  <div class="card hidden" id="loginBox">
+    <div class="card-header">
+      <h2>👩‍🏫 Teacher Login</h2>
+      <p>Sign in to access your dashboard</p>
+    </div>
+    <div class="sublabel" style="margin-top:0">Username</div>
+    <input id="user" type="text" placeholder="Enter username" autocomplete="username">
+    <div class="sublabel">Password</div>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn btn-full" style="margin-top:6px" onclick="login()">Login</button>
+    <p id="loginMsg" style="text-align:center;font-size:13px;font-weight:500;min-height:20px;margin-top:14px;color:var(--sub)"></p>
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn btn-ghost" onclick="backToEntry()">← Back</button>
+    </div>
+  </div>
+
+  <!-- STUDENT DASHBOARD -->
+  <div class="card hidden" id="studentBox">
+    <div class="sec-title">👨‍🎓 Student Dashboard</div>
+    <div class="sublabel" style="margin-top:0">📢 Notices</div>
+    <button class="btn btn-full" onclick="openNoticeModal()">View Notices</button>
+    <div class="divider"></div>
+    <div class="sublabel">📊 Results</div>
+    <button class="btn btn-full" onclick="goResults()">View Results</button>
+    <div class="divider"></div>
+    <div class="sublabel">🕒 Class Routine</div>
+    <ul id="studentRoutine" class="dlist"></ul>
+  </div>
+
+  <!-- TEACHER DASHBOARD -->
+  <div class="card hidden" id="teacherBox">
+    <div class="sec-title">👩‍🏫 Teacher Dashboard</div>
+    <div class="sublabel" style="margin-top:0">📢 Post Content</div>
+    <div class="add-grid">
+      <div class="panel">
+        <div class="panel-title">📝 New Notice</div>
+        <textarea id="noticeInput" placeholder="Write your notice…" rows="3"></textarea>
+        <button class="btn btn-full" onclick="addNotice()">Publish Notice</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🖼️ Add Picture</div>
+        <img id="imgPreview" alt="Preview">
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="picInput" accept="image/*" onchange="previewImage(event)">
+          <div class="upload-icon">📸</div>
+          <div class="upload-text">Tap to select</div>
+          <div class="upload-hint">JPG, PNG, GIF</div>
+        </div>
+        <input id="picCaption" placeholder="Caption (optional)">
+        <button class="btn btn-full" onclick="addPicture()">Publish Picture</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="sublabel">📊 Results</div>
+    <button class="btn btn-full" onclick="goResults2()">Manage Results</button>
+    <div class="divider"></div>
+    <div class="sublabel">🕒 Add to Routine</div>
+    <input id="routineInput" placeholder="e.g. Class 8 – 9:00 AM – Math">
+    <button class="btn btn-full" onclick="addRoutine()">Add to Routine</button>
+    <div class="divider"></div>
+    <div class="sublabel">🗑️ Manage Notices</div>
+    <ul id="teacherNotice" class="dlist"></ul>
+    <div class="divider"></div>
+    <div class="sublabel">🖼️ Manage Pictures</div>
+    <ul id="teacherPics" class="dlist"></ul>
+    <div class="divider"></div>
+    <div class="sublabel">🕒 Manage Routine</div>
+    <ul id="teacherRoutine" class="dlist"></ul>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ── STATE ─────────────────────────────────────────────── */
+let role = null;
+const CRED = {u:"Protik113",p:"Protik@1123"};
+let fbReady=false;
+let notices=[], routines=[], pictures=[];
+let selImg=null;
+let pendId=null, pendType=null;
+let unsubs=[];
+
+/* ── FIREBASE HELPERS ──────────────────────────────────── */
+function getDB(){return window._fb?.db}
+
+/* ── DATE/TIME FORMATTER ───────────────────────────────── */
+function formatDateTime(timestamp){
+  if(!timestamp)return '';
+  const d=new Date(timestamp);
+  const day=String(d.getDate()).padStart(2,'0');
+  const month=String(d.getMonth()+1).padStart(2,'0');
+  const year=d.getFullYear();
+  const hours=String(d.getHours()).padStart(2,'0');
+  const minutes=String(d.getMinutes()).padStart(2,'0');
+  return `${day}/${month}/${year} • ${hours}:${minutes}`;
+}
+
+/* ── FIREBASE INIT ─────────────────────────────────────── */
+function waitFB(){
+  return new Promise((ok,err)=>{
+    const t=setTimeout(()=>err(new Error('Firebase timeout')),12000);
+    if(window._fb){clearTimeout(t);fbReady=true;ok()}
+    else window.addEventListener('fb-ready',()=>{clearTimeout(t);fbReady=true;ok()});
+  });
+}
+
+async function seedData(){
+  const{ref,get,push,set}=window._fb;
+  const db=getDB();
+  try{
+    const ns=await get(ref(db,'notices'));
+    if(!ns.val()||!Object.keys(ns.val()).length){
+      const r1=push(ref(db,'notices'));await set(r1,{text:"🏫 School will remain closed on 15 April for Eid-ul-Fitr.",timestamp:Date.now()});
+      const r2=push(ref(db,'notices'));await set(r2,{text:"📅 Annual Sports Day on 25 April. All students must participate.",timestamp:Date.now()});
+    }
+    const rs=await get(ref(db,'routines'));
+    if(!rs.val()||!Object.keys(rs.val()).length){
+      const r1=push(ref(db,'routines'));await set(r1,{text:"Class 6 – 8:00 AM – Bangla",timestamp:Date.now()});
+      const r2=push(ref(db,'routines'));await set(r2,{text:"Class 7 – 9:00 AM – Mathematics",timestamp:Date.now()});
+      const r3=push(ref(db,'routines'));await set(r3,{text:"Class 8 – 10:30 AM – Science",timestamp:Date.now()});
+    }
+  }catch(e){console.warn('Seed error',e)}
+}
+
+function listenAll(){
+  const{ref,onValue}=window._fb;
+  const db=getDB();
+  unsubs.push(onValue(ref(db,'notices'),s=>{
+    notices=[];const v=s.val();
+    if(v)Object.entries(v).forEach(([k,d])=>notices.push({id:k,...d}));
+    notices.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderStudent();renderTeacher();
+  }));
+  unsubs.push(onValue(ref(db,'routines'),s=>{
+    routines=[];const v=s.val();
+    if(v)Object.entries(v).forEach(([k,d])=>routines.push({id:k,...d}));
+    routines.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderStudent();renderTeacher();
+  }));
+  unsubs.push(onValue(ref(db,'pictures'),s=>{
+    pictures=[];const v=s.val();
+    if(v)Object.entries(v).forEach(([k,d])=>pictures.push({id:k,...d}));
+    pictures.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderTeacher();
+  }));
+}
+
+/* ── NAV ───────────────────────────────────────────────── */
+function $id(id){return document.getElementById(id)}
+
+function updateNav(){
+  // Home button is always visible
+  $id('navHome').classList.remove('hidden');
+  $id('navBack').classList.toggle('hidden',!role);
+  $id('navStudent').classList.toggle('hidden',!!role);
+  $id('navTeacher').classList.toggle('hidden',role!=='teacher');
+  $id('navLogout').classList.toggle('hidden',role!=='teacher');
+}
+
+function setActiveNav(id){
+  document.querySelectorAll('nav .btn-nav').forEach(b=>b.classList.remove('active'));
+  const el=$id(id);if(el)el.classList.add('active');
+}
+
+/* ── SECTIONS ──────────────────────────────────────────── */
+function showSection(id){
+  if(id==='teacherBox'&&role!=='teacher'){showSection('loginBox');return}
+  document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+  const el=$id(id);
+  el.classList.remove('hidden');
+  // Trigger reveal animation
+  setTimeout(()=>{if(!el.classList.contains('visible'))el.classList.add('visible')},30);
+  const navMap={studentEntry:'navHome',loginBox:null,studentBox:'navStudent',teacherBox:'navTeacher'};
+  setActiveNav(navMap[id]);
+  if(id==='studentBox')renderStudent();
+  if(id==='teacherBox')renderTeacher();
+}
+
+function continueAsStudent(){showSection('studentBox')}
+function showTeacherLogin(){showSection('loginBox')}
+function backToEntry(){
+  $id('loginMsg').innerHTML='';
+  $id('user').value='';$id('pass').value='';
+  showSection('studentEntry');
+}
+function goHome(){
+  // Clear any login state
+  $id('loginMsg').innerHTML='';
+  $id('user').value='';
+  $id('pass').value='';
+  // Return to student entry portal
+  showSection('studentEntry');
+}
+function goResults(){try{window.location.href='about.html'}catch(e){showToast('Info','about.html not found','warn')}}
+function goResults2(){try{window.location.href='about2.html'}catch(e){showToast('Info','about2.html not found','warn')}}
+
+/* ── AUTH ──────────────────────────────────────────────── */
+function login(){
+  const u=$id('user').value.trim(),p=$id('pass').value.trim(),msg=$id('loginMsg');
+  if(u===CRED.u&&p===CRED.p){
+    role='teacher';updateNav();
+    msg.innerHTML=`<span style="color:var(--green)">✅ Login successful</span>`;
+    setTimeout(()=>{showSection('teacherBox');msg.innerHTML=''},700);
+  }else{
+    msg.innerHTML=`<span style="color:#ff3b30">❌ Invalid credentials</span>`;
+    $id('pass').value='';
+    $id('pass').focus();
+    // Shake animation on the card
+    const card=$id('loginBox');
+    card.style.animation='shake .35s ease';
+    setTimeout(()=>card.style.animation='',350);
+  }
+}
+
+function logout(){
+  role=null;updateNav();
+  $id('user').value='';$id('pass').value='';
+  showSection('studentEntry');
+  showToast('Signed out','See you next time!','success');
+}
+
+// Shake keyframe (injected once)
+const shakeKF=document.createElement('style');
+shakeKF.textContent='@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}';
+document.head.appendChild(shakeKF);
+
+/* ── ENTER KEY on login ────────────────────────────────── */
+['user','pass'].forEach(id=>{
+  $id(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+});
+
+/* ── DELETE MODAL ──────────────────────────────────────── */
+function openDeleteModal(type,id){
+  let txt='',title='Delete Item';
+  if(type==='notice'){const n=notices.find(x=>x.id===id);txt=n?n.text:'';title='Delete Notice'}
+  else if(type==='routine'){const r=routines.find(x=>x.id===id);txt=r?r.text:'';title='Delete Routine'}
+  else if(type==='picture'){txt='This picture will be permanently deleted.';title='Delete Picture'}
+  pendId=id;pendType=type;
+  $id('delPreview').textContent=txt;
+  $id('delTitle').textContent=title;
+  $id('deleteOverlay').classList.add('show');
+  $id('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal(){
+  $id('deleteOverlay').classList.remove('show');
+  $id('deleteModal').classList.remove('show');
+  pendId=null;pendType=null;
+}
+
+async function execDelete(){
+  if(!pendId||!pendType)return;
+  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
+  try{
+    const{ref,remove}=window._fb;
+    const db=getDB();
+    const map={notice:'notices',routine:'routines',picture:'pictures'};
+    await remove(ref(db,`${map[pendType]}/${pendId}`));
+    const labels={notice:'Notice',routine:'Routine',picture:'Picture'};
+    showToast('Deleted',`${labels[pendType]} removed successfully`,'danger');
+    closeDeleteModal();
+  }catch(e){showToast('Error','Failed to delete: '+e.message,'danger')}
+}
+
+$id('delConfirmBtn').addEventListener('click',execDelete);
+
+/* ── NOTICE MODAL ──────────────────────────────────────── */
+function openNoticeModal(){
+  renderNoticeModal();
+  $id('noticeOverlay').classList.add('show');
+  $id('noticeModal').classList.add('show');
+}
+function closeNoticeModal(){
+  $id('noticeOverlay').classList.remove('show');
+  $id('noticeModal').classList.remove('show');
+}
+function renderNoticeModal(){
+  const body=$id('noticeBody');
+  let html='';
+  notices.forEach(n=>{
+    html+=`<div class="notice-item">
+      <span class="n-icon">📢</span>
+      <div style="flex:1">
+        <span style="display:block;margin-bottom:4px">${escHTML(n.text)}</span>
+        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(n.timestamp)}</span>
+      </div>
+    </div>`;
+  });
+  pictures.forEach(p=>{
+    html+=`<div class="notice-img-item">
+      <img src="${p.imageData}" alt="${p.caption?escHTML(p.caption):'Notice Image'}" loading="lazy">
+      ${p.caption?`<div class="img-cap">📷 ${escHTML(p.caption)}</div>`:''}
+      <div style="padding:8px 12px;font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</div>
+    </div>`;
+  });
+  body.innerHTML=html||'<div class="empty">No notices yet.</div>';
+}
+
+/* ── IMAGE UPLOAD ──────────────────────────────────────── */
+function previewImage(e){
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    selImg=ev.target.result;
+    const prev=$id('imgPreview');
+    prev.src=selImg;prev.style.display='block';
+    $id('uploadZone').style.display='none';
+  };
+  rd.readAsDataURL(file);
+}
+
+/* ── ADD NOTICE ────────────────────────────────────────── */
+async function addNotice(){
+  const inp=$id('noticeInput'),text=inp.value.trim();
+  if(!text){showToast('Oops','Please write a notice first','danger');return}
+  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
+  try{
+    const{ref,push,set}=window._fb;
+    const db=getDB();
+    await set(push(ref(db,'notices')),{text,timestamp:Date.now()});
+    inp.value='';
+    showToast('Published','Notice added successfully','success');
+  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+}
+
+/* ── ADD PICTURE ───────────────────────────────────────── */
+async function addPicture(){
+  if(!selImg){showToast('Oops','Please select an image first','danger');return}
+  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
+  const cap=$id('picCaption').value.trim();
+  try{
+    const{ref,push,set}=window._fb;
+    const db=getDB();
+    await set(push(ref(db,'pictures')),{imageData:selImg,caption:cap,timestamp:Date.now()});
+    selImg=null;
+    $id('imgPreview').style.display='none';$id('imgPreview').src='';
+    $id('uploadZone').style.display='block';
+    $id('picCaption').value='';$id('picInput').value='';
+    showToast('Published','Picture added successfully','success');
+  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+}
+
+/* ── ADD ROUTINE ───────────────────────────────────────── */
+async function addRoutine(){
+  const inp=$id('routineInput'),text=inp.value.trim();
+  if(!text){showToast('Oops','Please enter routine text','danger');return}
+  if(!fbReady){showToast('Error','Firebase not ready','danger');return}
+  try{
+    const{ref,push,set}=window._fb;
+    const db=getDB();
+    await set(push(ref(db,'routines')),{text,timestamp:Date.now()});
+    inp.value='';
+    showToast('Added','Routine updated','success');
+  }catch(e){showToast('Error','Failed: '+e.message,'danger')}
+}
+
+/* ── RENDER STUDENT ────────────────────────────────────── */
+function renderStudent(){
+  const el=$id('studentRoutine');if(!el)return;
+  el.innerHTML=routines.length
+    ?routines.map(r=>`<li>
+      <div style="flex:1">
+        <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
+        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
+      </div>
+    </li>`).join('')
+    :'<div class="empty">No routine added yet.</div>';
+}
+
+/* ── RENDER TEACHER ────────────────────────────────────── */
+function renderTeacher(){
+  const ne=$id('teacherNotice'),re=$id('teacherRoutine'),pe=$id('teacherPics');
+  if(!ne||!re)return;
+
+  ne.innerHTML=notices.length
+    ?notices.map(n=>`<li>
+      <div style="flex:1">
+        <span style="display:block;margin-bottom:4px">${escHTML(n.text)}</span>
+        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(n.timestamp)}</span>
+      </div>
+      <button class="btn btn-del" data-type="notice" data-id="${n.id}">Delete</button>
+    </li>`).join('')
+    :'<div class="empty">No notices yet.</div>';
+
+  if(pe)pe.innerHTML=pictures.length
+    ?pictures.map(p=>`<li style="flex-direction:column;align-items:flex-start;gap:8px">
+      <img src="${p.imageData}" style="width:100%;max-height:150px;object-fit:contain;border-radius:10px;background:var(--surface-solid)" loading="lazy">
+      ${p.caption?`<span style="font-size:12.5px;color:var(--sub)">📷 ${escHTML(p.caption)}</span>`:''}
+      <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(p.timestamp)}</span>
+      <button class="btn btn-del" data-type="picture" data-id="${p.id}">Delete</button>
+    </li>`).join('')
+    :'<div class="empty">No pictures yet.</div>';
+
+  re.innerHTML=routines.length
+    ?routines.map(r=>`<li>
+      <div style="flex:1">
+        <span style="display:block;margin-bottom:4px">${escHTML(r.text)}</span>
+        <span style="font-size:11px;color:var(--sub);opacity:0.8">📅 ${formatDateTime(r.timestamp)}</span>
+      </div>
+      <button class="btn btn-del" data-type="routine" data-id="${r.id}">Delete</button>
+    </li>`).join('')
+    :'<div class="empty">No routine added yet.</div>';
+}
+
+/* Event delegation for delete buttons */
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.btn-del');
+  if(btn&&btn.dataset.type&&btn.dataset.id)openDeleteModal(btn.dataset.type,btn.dataset.id);
+});
+
+/* ── DEV BOX ───────────────────────────────────────────── */
+function toggleDev(){
+  const box=$id('devBox'),ov=$id('devOverlay'),show=box.classList.contains('show');
+  box.classList.toggle('show',!show);ov.classList.toggle('show',!show);
+}
+
+/* ── TOAST ─────────────────────────────────────────────── */
+function showToast(title,msg,type='success'){
+  const icon=type==='danger'||type==='error'?'🗑️':type==='warn'?'⚠️':'✅';
+  const c=document.createElement('div');
+  c.className='toast'+(type==='danger'||type==='error'?' danger':'');
+  c.innerHTML=`<span class="t-icon">${icon}</span><div><strong class="t-title">${escHTML(title)}</strong><span class="t-msg">${escHTML(msg)}</span></div>`;
+  $id('toasts').appendChild(c);
+  setTimeout(()=>{
+    c.style.animation='toastOut .4s var(--ease) forwards';
+    setTimeout(()=>c.remove(),400);
+  },3200);
+}
+
+/* ── RIPPLE ─────────────────────────────────────────────── */
+function addRipple(e){
+  const btn=e.currentTarget;if(!btn||btn.disabled)return;
+  const r=document.createElement('span');
+  const rect=btn.getBoundingClientRect();
+  const sz=Math.max(rect.width,rect.height);
+  r.className='ripple';
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(),420);
+}
+
+/* ── DARK MODE ─────────────────────────────────────────── */
+/* ── DARK MODE (Firebase Sync) ─────────────────────────── */
+function setupTheme(){
+  const btn=$id('themeBtn');
+  const knob=btn.querySelector('.theme-knob');
+  const sys=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  // Apply theme from body class or system preference
+  const applyTheme=(isDark)=>{
+    document.body.classList.toggle('dark',isDark);
+    knob.textContent=isDark?'☀️':'🌙';
+  };
+  
+  // Load theme from Firebase
+  const loadThemeFromFirebase=async()=>{
+    if(!window._fb)return sys;
+    try{
+      const{ref,get}=window._fb;
+      const db=getDB();
+      const snap=await get(ref(db,'settings/theme'));
+      return snap.val()==='dark';
+    }catch(e){
+      console.warn('Theme load error:',e);
+      return sys;
+    }
+  };
+  
+  // Save theme to Firebase
+  const saveThemeToFirebase=async(isDark)=>{
+    if(!window._fb)return;
+    try{
+      const{ref,set}=window._fb;
+      const db=getDB();
+      await set(ref(db,'settings/theme'),isDark?'dark':'light');
+    }catch(e){
+      console.warn('Theme save error:',e);
+    }
+  };
+  
+  // Listen for theme changes from Firebase
+  const listenThemeChanges=()=>{
+    if(!window._fb)return;
+    const{ref,onValue}=window._fb;
+    const db=getDB();
+    onValue(ref(db,'settings/theme'),snap=>{
+      const theme=snap.val();
+      if(theme)applyTheme(theme==='dark');
+    });
+  };
+  
+  // Initialize theme
+  loadThemeFromFirebase().then(isDark=>{
+    applyTheme(isDark);
+    listenThemeChanges();
+  });
+  
+  // Toggle theme on button click
+  btn.addEventListener('click',async()=>{
+    const isDark=document.body.classList.toggle('dark');
+    knob.textContent=isDark?'☀️':'🌙';
+    await saveThemeToFirebase(isDark);
+  });
+  
+  // System preference change (only if no Firebase theme set)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',async ev=>{
+    if(!window._fb)return;
+    try{
+      const{ref,get}=window._fb;
+      const db=getDB();
+      const snap=await get(ref(db,'settings/theme'));
+      if(!snap.exists()){
+        applyTheme(ev.matches);
+        await saveThemeToFirebase(ev.matches);
+      }
+    }catch(e){}
+  });
+}
+
+/* ── SCROLL REVEAL ─────────────────────────────────────── */
+function setupReveal(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');io.unobserve(en.target)}});
+  },{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.card').forEach(c=>io.observe(c));
+}
+
+/* ── STICKY NAV ─────────────────────────────────────────── */
+function setupNav(){
+  const nav=$id('mainNav');
+  window.addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>40),{passive:true});
+}
+
+/* ── ESCAPE HTML ────────────────────────────────────────── */
+function escHTML(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── INIT ──────────────────────────────────────────────── */
+window.addEventListener('load',async()=>{
+  setupTheme();
+  setupReveal();
+  setupNav();
+
+  // Add ripple to all .btn elements (including future ones via delegation)
+  document.addEventListener('click',e=>{
+    const btn=e.target.closest('.btn');
+    if(btn)addRipple(Object.assign(e,{currentTarget:btn}));
+  });
+
+  try{
+    await waitFB();
+    await seedData();
+    listenAll();
+  }catch(err){
+    console.error('Firebase init failed:',err);
+    showToast('Connection error','Running in offline mode','danger');
+  }
+
+  const logo=$id('logo');
+  const splash=$id('splash');
+  const loading=$id('loading');
+
+  // Loading → splash reveal
+  setTimeout(()=>loading.classList.add('out'),400);
+
+  // Logo animates to corner
+  setTimeout(()=>logo.classList.add('small'),280);
+
+  // Splash fades
+  setTimeout(()=>{
+    splash.classList.add('out');
+    setTimeout(()=>splash.style.display='none',500);
+  },1600);
+
+  // Show entry card
+  setTimeout(()=>{
+    showSection('studentEntry');
+    updateNav();
+  },2100);
+});
+
+window.addEventListener('beforeunload',()=>unsubs.forEach(u=>u&&u()));
+</script>
+</body>
+</html>
