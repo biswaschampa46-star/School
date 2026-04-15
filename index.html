@@ -814,33 +814,55 @@ function listenAll() {
   const { ref, onValue } = window._fb;
   const db = getDB();
 
+  console.log('🔄 Setting up Firebase real-time listeners...');
+
   // Unsubscribe any existing listeners first (prevents duplicate on hot-reload)
   unsubs.forEach(u => u && u());
   unsubs = [];
 
   unsubs.push(onValue(ref(db, 'notices'), s => {
+    console.log('📢 Notices listener triggered');
     notices = [];
     const v = s.val();
-    if (v) Object.entries(v).forEach(([k, d]) => notices.push({ id: k, ...d }));
+    if (v) {
+      Object.entries(v).forEach(([k, d]) => notices.push({ id: k, ...d }));
+      console.log(`✓ Loaded ${Object.keys(v).length} notices from Firebase`);
+    } else {
+      console.log('ℹ️  No notices in database');
+    }
     notices.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     renderStudent(); renderTeacher();
   }));
 
   unsubs.push(onValue(ref(db, 'routines'), s => {
+    console.log('📅 Routines listener triggered');
     routines = [];
     const v = s.val();
-    if (v) Object.entries(v).forEach(([k, d]) => routines.push({ id: k, ...d }));
+    if (v) {
+      Object.entries(v).forEach(([k, d]) => routines.push({ id: k, ...d }));
+      console.log(`✓ Loaded ${Object.keys(v).length} routines from Firebase`);
+    } else {
+      console.log('ℹ️  No routines in database');
+    }
     routines.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     renderStudent(); renderTeacher();
   }));
 
   unsubs.push(onValue(ref(db, 'pictures'), s => {
+    console.log('🖼️  Pictures listener triggered');
     pictures = [];
     const v = s.val();
-    if (v) Object.entries(v).forEach(([k, d]) => pictures.push({ id: k, ...d }));
+    if (v) {
+      Object.entries(v).forEach(([k, d]) => pictures.push({ id: k, ...d }));
+      console.log(`✓ Loaded ${Object.keys(v).length} pictures from Firebase`);
+    } else {
+      console.log('ℹ️  No pictures in database');
+    }
     pictures.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     renderTeacher();
   }));
+
+  console.log('✅ All Firebase listeners set up successfully');
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1017,16 +1039,18 @@ function closeDeleteModal() {
 }
 
 async function execDelete() {
-  console.log('=== DELETE STARTED ===');
-  console.log('pendId:', pendId);
-  console.log('pendType:', pendType);
+  console.log('═══════════════════════════════════════════════════');
+  console.log('🗑️  DELETE OPERATION STARTED');
+  console.log('═══════════════════════════════════════════════════');
+  console.log('📋 pendId:', pendId);
+  console.log('📋 pendType:', pendType);
   
   if (!pendId || !pendType) {
-    console.error('Missing pendId or pendType');
+    console.error('❌ Missing pendId or pendType');
     return;
   }
   if (!fbReady) { 
-    console.error('Firebase not ready');
+    console.error('❌ Firebase not ready');
     showToast('Error', 'Firebase not ready', 'danger'); 
     return; 
   }
@@ -1036,53 +1060,68 @@ async function execDelete() {
   btn.disabled = true;
 
   try {
-    // FIX #2: deleteObject comes from window._fb — no dynamic import needed
     const { ref, remove, storage, storageRef, deleteObject } = window._fb;
     const db = getDB();
-    console.log('Database instance:', db);
-    console.log('Storage instance:', storage);
+    
+    if (!db) {
+      throw new Error('Database instance is null');
+    }
+    
+    console.log('✓ Database instance obtained');
+    console.log('✓ Storage instance obtained');
     
     const map = { notice: 'notices', routine: 'routines', picture: 'pictures' };
     const dbPath = `${map[pendType]}/${pendId}`;
-    console.log('Database path to delete:', dbPath);
+    console.log('🎯 Firebase path to delete:', dbPath);
 
     // Delete image from Storage first (if applicable)
     if (pendType === 'picture') {
       const pic = pictures.find(p => p.id === pendId);
-      console.log('Picture to delete:', pic);
+      console.log('🖼️  Picture object:', pic);
+      
       if (pic && pic.imageUrl) {
         try {
-          // Extract storage path from download URL
           const urlPath = pic.imageUrl.split('/o/')[1]?.split('?')[0];
           if (urlPath) {
             const decodedPath = decodeURIComponent(urlPath);
-            console.log('Deleting from Storage path:', decodedPath);
+            console.log('🗂️  Storage path:', decodedPath);
             const imgRef = storageRef(storage, decodedPath);
             await deleteObject(imgRef);
-            console.log('✓ Image deleted from Storage');
+            console.log('✅ Image deleted from Firebase Storage');
           }
         } catch(storageErr) {
-          // Storage delete failure is non-fatal — DB record can still be removed
-          console.warn('Storage delete warning (non-fatal):', storageErr.message);
+          console.warn('⚠️  Storage delete failed (non-fatal):', storageErr.message);
         }
+      } else if (pic && pic.imageData) {
+        console.log('ℹ️  Picture uses base64 imageData (no Storage delete needed)');
       }
     }
 
-    // Remove database record
-    console.log('Attempting to remove from database...');
+    // Remove from Firebase Realtime Database
+    console.log('🔥 Deleting from Firebase Realtime Database...');
     const dbRef = ref(db, dbPath);
-    console.log('Database reference:', dbRef);
+    console.log('📍 Database reference created:', dbRef.toString());
+    
     await remove(dbRef);
-    console.log('✓ Successfully removed from database');
+    
+    console.log('✅ SUCCESSFULLY DELETED FROM FIREBASE DATABASE');
+    console.log('═══════════════════════════════════════════════════');
+    console.log('🎉 Delete operation completed successfully');
+    console.log('═══════════════════════════════════════════════════');
     
     const labels = { notice: 'Notice', routine: 'Routine', picture: 'Picture' };
-    showToast('Deleted', `${labels[pendType]} removed successfully`, 'danger');
+    showToast('Deleted', `${labels[pendType]} removed permanently`, 'danger');
     closeDeleteModal();
+    
   } catch(e) {
-    console.error('=== DELETE FAILED ===');
-    console.error('Error:', e);
+    console.error('═══════════════════════════════════════════════════');
+    console.error('❌ DELETE OPERATION FAILED');
+    console.error('═══════════════════════════════════════════════════');
+    console.error('Error object:', e);
     console.error('Error message:', e.message);
     console.error('Error code:', e.code);
+    console.error('Error stack:', e.stack);
+    console.error('═══════════════════════════════════════════════════');
     showToast('Error', 'Failed to delete: ' + e.message, 'danger');
   } finally {
     btn.textContent = 'Delete';
