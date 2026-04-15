@@ -610,7 +610,7 @@ window.dispatchEvent(new Event("fb-ready"));
   <button class="dev-close" onclick="toggleDev()" aria-label="Close">✕</button>
   <div class="dev-avatar-wrap">
     <div class="ring"></div><div class="ring r2"></div>
-    <div class="dev-emoji">👨‍💻</div>
+    <div class="dev-emoji">👨‍</div>
   </div>
   <div class="dev-name">Senior Developer<br><span style="font-size:.85em;font-weight:400">Protik Biswas</span></div>
   <div class="dev-role">Frontend Developer &amp; Designer</div>
@@ -803,30 +803,12 @@ function waitFB() {
   });
 }
 
-async function seedData() {
-  const { ref, get, push, set } = window._fb;
-  const db = getDB();
-  try {
-    const ns = await get(ref(db, 'notices'));
-    if (!ns.val() || !Object.keys(ns.val()).length) {
-      const r1 = push(ref(db, 'notices'));
-      await set(r1, { text: "🏫 School will remain closed on 15 April for Eid-ul-Fitr.", timestamp: Date.now() });
-      const r2 = push(ref(db, 'notices'));
-      await set(r2, { text: "📅 Annual Sports Day on 25 April. All students must participate.", timestamp: Date.now() });
-    }
-    const rs = await get(ref(db, 'routines'));
-    if (!rs.val() || !Object.keys(rs.val()).length) {
-      const items = [
-        "Class 6 – 8:00 AM – Bangla",
-        "Class 7 – 9:00 AM – Mathematics",
-        "Class 8 – 10:30 AM – Science"
-      ];
-      for (const text of items) {
-        await set(push(ref(db, 'routines')), { text, timestamp: Date.now() });
-      }
-    }
-  } catch(e) { console.warn('Seed error', e); }
-}
+// ═══════════════════════════════════════════════════════════
+// FIX #13: Removed seedData() — it was re-adding deleted items
+// every time the page refreshed because it checked if the DB
+// was empty and auto-inserted default data. Now it's gone.
+// Data will only exist if you manually add it from the dashboard.
+// ═══════════════════════════════════════════════════════════
 
 function listenAll() {
   const { ref, onValue } = window._fb;
@@ -1474,6 +1456,7 @@ function escHTML(s) {
    INIT
    FIX #5: Removed duplicate addEventListener for delConfirmBtn
    FIX #8: Session restored before first render
+   FIX #13: Removed seedData() call — no more auto-adding deleted items
 ══════════════════════════════════════════════════════════ */
 window.addEventListener('load', async () => {
   setupTheme();
@@ -1502,7 +1485,8 @@ window.addEventListener('load', async () => {
 
   try {
     await waitFB();
-    await seedData();
+    // FIX #13: seedData() removed — was re-adding deleted items on every refresh
+    // await seedData(); // ← THIS WAS THE BUG
     listenAll();
   } catch(err) {
     console.error('Firebase init failed:', err);
